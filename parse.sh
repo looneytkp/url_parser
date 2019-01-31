@@ -286,7 +286,7 @@ sort(){
 }
 trap sig_abort SIGINT
 arch=$(uname)
-cleanup; if [ "$1" != -u ]; then update;fi
+cleanup; if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)	
