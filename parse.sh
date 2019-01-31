@@ -1,11 +1,22 @@
 #!/bin/bash
 #looneytkp
-version="v6.45"
+version="v6.55"
 set -e
 if [ ! -e /usr/bin/xclip ]&&[ ! -e /usr/local/bin/xclip ]; then
 	echo -e "install xclip.";exit 0
 elif [ ! -e /usr/bin/wget ]&&[ ! -e /usr/local/bin/wget ]; then
 	echo -e "install wget.";exit 0
+elif [ ! -e /usr/bin/git ]&&[ ! -e /usr/local/bin/git ]; then
+	printf "git is not installed."
+	if [ $arch == Darwin ]; then
+		read -erp " install git ? Y/n: " gitInst
+		case $gitInst in
+			Y|y|'') git --version;;
+		esac
+	fi
+fi
+if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
+elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 fi
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
 ct=.ct
@@ -13,13 +24,14 @@ ct2=.ct2
 out=.out
 out2=.out2
 name="parse"
+directory=~/.parseHub
 
 cleanup(){
 	if [ -e .out ]; then rm .out*; fi
 	if [ -e .ct ]; then rm .ct*; fi
 	if [ -e .ct2 ]; then rm .ct*; fi
 	if [ -e .wget ]; then rm .wget; fi
-	if [ -d $_dir ]; then rm -rf $_dir; fi
+	if [ -d "$_dir" ]; then rm -rf "$_dir"; fi
 }
 
 sig_abort(){
@@ -109,15 +121,15 @@ dl(){
 }
 
 final(){
-	echo >> $out && grep -o '.*Season.*' $file|head -1 >> $out
+	echo >> $out && grep -o '.*Season.*' "$file"|head -1 >> $out
 	f=(480p 720p 1080p)
 	for f in "${f[@]}"; do
-		if grep -qioE "$f" $file; then
-			grep -E "$f" $file > $ct2
+		if grep -qioE "$f" "$file"; then
+			grep -E "$f" "$file" > $ct2
 			if grep -qE "(x264|x265)" $ct2; then
 				perg(){ 
 					size=$(wc -l<.ct3)
-					if [ $size -ge 1 ]; then echo >> $out;cat .ct3 >> $out;fi;rm .ct3
+					if [ "$size" -ge 1 ]; then echo >> $out;cat .ct3 >> $out;fi;rm .ct3
 				}
 				grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
 			else
@@ -145,13 +157,13 @@ parser(){
 				if grep -qE "(x264|x265)" $ct2; then
 					perg(){ 
 						size=$(wc -l<.ct3)
-						if [ $size -ge 1 ]; then echo -e "\\n$f" >> $out;cat .ct3 >> $out;fi
+						if [ "$size" -ge 1 ]; then echo -e "\\n$f" >> $out;cat .ct3 >> $out;fi
 						rm .ct3
 						}
 					grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
 				else
 					size=$(wc -l<$ct2)
-					if [ $size -ge 1 ]; then
+					if [ "$size" -ge 1 ]; then
 						echo -e "\\n$f" >> $out;grep -owE "($f|$format)" $ct2 >> $out
 					fi
 				fi
@@ -206,33 +218,33 @@ edit(){
 sort(){
 	compare(){
 		size=$(wc -l<$out)
-		if [ $size -le 1 ]; then
+		if [ "$size" -le 1 ]; then
 			status=1
 		else
 			cmpr=$(grep -iwoE "s$srt" $out|head -1|sed 's:[S-s]::')
 			cmpr=$(grep -o "Season [0-9][0-9]" $out|sed 's:Season ::'|head -1)
-			if grep -oq "Season $cmpr" $out && grep -oqs "Season $cmpr" $_dir/s$cmpr;then
+			if grep -oq "Season $cmpr" $out && grep -oqs "Season $cmpr" "$_dir/s$cmpr";then
 				sed -i "/Season $cmpr/d" $out
 			else
 				true
 			fi
 			cat $out >> "$_dir/s$cmpr";unset cmpr
-			if [ $arch = Darwin ]; then rm $out && touch $out; else truncate -s 0 $out;fi
+			if [ "$arch" = Darwin ]; then rm $out && touch $out; else truncate -s 0 $out;fi
 			status=0
 		fi
 	}
 	_dir=.editmp
 	if [ ! -d $_dir ]; then mkdir $_dir;fi
 	a=0;b=1;d=0
-	escape=$(echo $escape)
+	escape=$(echo "$escape")
 	while true;do
 		if [ $b -ge 10 ]; then d="";srt="$d$b"
 		elif [ $b -le 10 ]; then if [ $b -eq 0 ]; then b=1; else d=0;srt="$d$b"; fi
 		fi
 		if [ $a != 1 ]; then
-			if [ $escape == no ]; then
+			if [ "$escape" == no ]; then
 				url=$position
-			elif [ $escape == yes ]; then
+			elif [ "$escape" == yes ]; then
 				url=""
 			fi
 			case "$url" in
@@ -242,17 +254,17 @@ sort(){
 					else
 						echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n" > $out
 						echo -e ">>>  paste movie description here  <<<" >> $out
-						for file in $_dir/*;do final; done
+						for file in "$_dir"/*;do final; done
 						echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out
 						xclip -sel clip < $out
-						if [ $escape == yes ]; then echo -e ":: copied to clipboard.\\n"
+						if [ "$escape" == yes ]; then echo -e ":: copied to clipboard.\\n"
 							rm $out
 							return
 						fi
 					fi;;
 				*)
 						lru=$(echo "$url"|grep "http"|| echo false)
-						if [ $lru == false ]; then
+						if [ "$lru" == false ]; then
 								echo ":: error: $url not a URL."
 								echo > $out;size=$(wc -l<$out);abort
 						else
@@ -271,12 +283,9 @@ sort(){
 
 trap sig_abort SIGINT
 arch=$(uname)
-if [ $arch = Linux ]; then inst_dir=/usr/bin/$name
-elif [ $arch = Darwin ]; then inst_dir=/usr/local/bin/$name
-fi
 cleanup
 case $1 in
-	""|480p|480P|720p|720P|1080p|1080P)	echo;edit $1;;
+	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)	
 		if [ "$2" != '' ]; then
 			escape=no;nd2="$2";n=$#;n=$((n-1));n1=$n;mul=0;z=0
@@ -309,33 +318,21 @@ case $1 in
 		else
 			echo -e ":: no links added."
 		fi;;
-	-i)
-		_script=$(echo "$0")
-		if [[ ! -e $inst_dir ]]; then
-			sudo cp "$_script" $inst_dir && sudo chmod 777 $inst_dir
-			echo -e "$name $version: installed.";bash "$0" -c
-		else
-			if [ "$0" == $inst_dir ]; then
-				echo -e "$name: $version already installed."
-				exit 0
-			fi
-			a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
-			b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
-			if [[ "$a" != "$b" ]]; then
-				sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
-				echo -e "$name: updated to $version.";bash "$0" -c
-			else
-				echo -e "$name: up-to-date -- $version."
-			fi
-		fi;;
 	-u)
-		if [ -e $inst_dir ]; then sudo rm $inst_dir
+		if [ -e /usr/bin/git ]||[ -e /usr/local/bin/git ]; then
+			cd "$directory"
+			git pull
+		fi
+		
+		;;
+	-d)
+		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory
 			echo "$name: uninstalled."
 		else
 			echo "$name is not installed"
 		fi;;
 	-v) echo -e "version: $version.\\nby looneytkp.";;
 	-c)	echo -e "\\nchangelog:\\n  - updated to $version.\\n  - added '-c' flag to display changelog.\\n  - changed '-s' flag to '-p'.\\n  - fixed problem with parsing header.\\n  - track auto parsing progress.\\n  - fixed progress errors.\\n  - updated strings in help.\\n  - display help when when flag is invalid.\\n  - display changelog after update & install.\\n";;
-	-h)	echo -e "\\na simple URL parser.\\nusage: $name [...flag]\\nflags:\\n   480p   -   parse 480p URLs only.\\n   720p   -   parse 720p URLs only.\\n   1080p  -   parse 1080p URLs only.\\n     -p   -   automatic multi-URL parser.\\n     -i   -   install $name.\\n     -u   -   uninstall $name.\\n     -c   -   display changelog.\\n     -v   -   display version.\\n     -h   -   display help.\\n";;
+	-h)	echo -e "\\na simple URL parser.\\nusage: $name [...flag]\\nflags:\\n   480p   -   parse 480p URLs only.\\n   720p   -   parse 720p URLs only.\\n   1080p  -   parse 1080p URLs only.\\n     -p   -   automatic multi-URL parser.\\n     -i   -   install $name.\\n     -  check for updates.\\n     -d   -   uninstall $name.\\n     -c   -   display changelog.\\n     -v   -   display version.\\n     -h   -   display help.\\n";;
 	*)	echo -e "unknown flag: $1.";bash "$0" -h;;
 esac

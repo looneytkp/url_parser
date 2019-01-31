@@ -12,4 +12,10 @@ v6.50
   - fixed unary operator bug when parsing a wrong URL.
   - improved connection error detection.
   - workaround truncate error for mac.
-  - fixed read flag error.
+  - fixed read flag error for mac.
+  - added double quotes to prevent errors.
+
+v6.55
+  - changed '-u' flag for uninstall to '-d'
+  - added '-u' flag to check for updates.
+  - auto update check.
