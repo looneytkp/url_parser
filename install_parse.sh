@@ -17,6 +17,7 @@ fi
 
 run() {
 if [[ ! -e $inst_dir ]]; then
+	echo "installing..."
 	sudo cp "$_script" $inst_dir && sudo chmod 777 $inst_dir
 	echo -e "$name $version: installed.";$name -c
 else
@@ -49,11 +50,12 @@ elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 fi
 
 if [ ! -d url_parser ]; then
-	git clone https://github.com/looneytkp/url_parser.git 2> /dev/null
+	git clone https://github.com/looneytkp/url_parser.git 2> /dev/null||
+	echo "no internet connection."
 	cd url_parser
 	run
 else
 	cd url_parser
-	git pull -q
+	git pull -q||echo "no internet connection."
 	run
 fi

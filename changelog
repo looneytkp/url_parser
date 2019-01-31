@@ -28,7 +28,8 @@ v6_50(){
   - added install_parse.sh to install parse.
   - made changelog & help standalone.
   - added '-C' to display full changelog'.
-  - fixes for parse.sh to run without installing.\\n"
+  - fixes for parse.sh to run without installing.
+  - detect internet connection in install_parse.sh.\\n"
 }
 
 case $l in
