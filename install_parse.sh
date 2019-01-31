@@ -23,7 +23,7 @@ else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
-		printf %b "                 available: $version.\\r"
+		printf %b "                 > $name $version available.\\r"
 		read -n 1 -erp "update? Y/n: " update
 		case $update in
 			Y|y|'')
