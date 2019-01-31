@@ -52,14 +52,23 @@ header(){
 		if grep -qioE "s[0-9][0-9]" $ct; then
 			_a=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
 			sed -e "s/[S-s]/<h3>Season /" -e 's/$/<\/h3>/')
-#			_b=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
-#			sed -e "s/[S-s]/<h3>Season /" -e 's/[0-9]//' -e 's/$/<\/h3>/')
-#			_c=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
-#			sed -e 's/[S-s]//' -e 's/[0-9]$//')
-#			if [ "$_c" -ge 1 ]; then echo "$_a"; else echo "$_b"; fi
 			echo "$_a"
 		fi
 	} >> $out
+}
+
+update(){
+cd $directory
+old_m=$(sed 's/-.*//' .date)
+old_d=$(sed 's/.*-//' .date)
+new_m=$(date +%m)
+new_d=$(date +%d)
+month=$(((new_m-old_m)*30))
+day=$((new_d-old_d+month))
+if [ $day -ge 3 ]; then
+	read -n 1 -erp "check for updates ? Y/n : " c4u
+	if [ $c4u == y ]; then $0 -u;fi
+fi
 }
 
 PIO(){
@@ -277,10 +286,9 @@ sort(){
 	done
 	'sort'
 }
-
 trap sig_abort SIGINT
 arch=$(uname)
-cleanup
+cleanup; update
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)	

@@ -24,9 +24,13 @@ else
 	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
 		printf %b "                 available: $version.\\r"
-		read -n 1 -erp "update? Y/n: "
-		sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
-		echo -e "$name: updated to $version.";$name -c
+		read -n 1 -erp "update? Y/n: " update
+		case $update in
+			Y|y|'')
+				sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
+				echo -e "$name: updated to $version.";$name -c;;
+			n) echo "$name: not updated.";return;;
+		esac
 	else
 		echo -e "$name: up-to-date -- $version."
 	fi
