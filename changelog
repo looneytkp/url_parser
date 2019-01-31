@@ -1,4 +1,8 @@
-v6.45
+#!/bin/bash
+set -e
+
+v6_45(){
+	echo -e "\\n  v.6.45
   - added '-c' flag to display changelog.
   - changed '-s' flag to '-p'.
   - fixed problem with parsing header.
@@ -6,18 +10,27 @@ v6.45
   - fixed progress errors.
   - updated strings in help.
   - display help when when flag is invalid.
-  - display changelog after update & install.
+  - display changelog after update & install."
+}
 
-v6.50
+v6_50(){
+	echo -e "\\n  v6.50
   - fixed unary operator bug when parsing a wrong URL.
   - improved connection error detection.
   - workaround truncate error for mac.
   - fixed read flag error for mac.
-  - added double quotes to prevent errors.
-
-v6.55
-  - changed '-u' flag for uninstall to '-d'
-  - create directory for parse at '~/.parseHub'
+  - added double quotes to prevent globbing errors.
+  - changed uninstall flag to '-d'.
+  - create directory for parse at '~/.parseHub'.
   - added '-u' flag to check for updates manually.
-  - added code to automatically check for updates.
+  - automatically check for updates.
+  - schedule auto-update check if input is negative.
   - added install_parse.sh to install parse.
+  - made changelog & help standalone.
+  - added '-C' to display full changelog'\\n"
+}
+
+case $l in
+	-C) printf %b "\\nchangelog:\\r";v6_45 && v6_50;;
+	-c) printf %b "\\nchangelog:\\r";v6_50;;
+esac
