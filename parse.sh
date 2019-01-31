@@ -67,7 +67,7 @@ month=$(((new_m-old_m)*30))
 day=$((new_d-old_d+month))
 if [ $day -ge 3 ]; then
 	read -n 1 -erp "check for updates ? Y/n : " c4u
-	if [ $c4u == y ]; then $0 -u;fi
+	if [ "$c4u" == y ]; then $0 -u;date +%m-%d > .date;fi
 fi
 }
 
