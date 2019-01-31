@@ -37,7 +37,7 @@ else
 fi
 }
 
-version="v6.55"
+version="v6.50"
 name="parse"
 _script=parse.sh
 directory=~/.parseHub
