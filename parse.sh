@@ -58,6 +58,7 @@ header(){
 }
 
 update(){
+if [ ! -d $directory ]; then return;fi
 cd $directory
 old_m=$(sed 's/-.*//' url_parser/.date);old_d=$(sed 's/.*-//' url_parser/.date)
 new_m=$(date +%m);new_d=$(date +%d);month=$(((new_m-old_m)*30));day=$((new_d-old_d+month))
@@ -339,8 +340,9 @@ case $1 in
 			echo "$name is not installed"
 		fi;;
 	-v) echo -e "version: $version.\\nby looneytkp.";;
-	-c)	l=$1;export l;bash changelog;;
-	-C) l=$1;export l;bash changelog;;
-	-h)	cat $directory/url_parser/.help;;
-	*)	echo -e "unknown flag: $1.";cat $directory/url_parser/.help;;
+	-c)	l=$1;export l;bash $directory/url_parser/changelog;;
+	-C) l=$1;export l;bash $directory/url_parser/changelog;;
+	-h)	if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;
+	*)	echo -e "invalid flag: $1."
+		if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;
 esac

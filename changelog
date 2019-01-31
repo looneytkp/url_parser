@@ -27,7 +27,8 @@ v6_50(){
   - schedule auto-update check if input is negative.
   - added install_parse.sh to install parse.
   - made changelog & help standalone.
-  - added '-C' to display full changelog'.\\n"
+  - added '-C' to display full changelog'.
+  - fixes for parse.sh to run without installing.\\n"
 }
 
 case $l in
