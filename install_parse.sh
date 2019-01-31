@@ -28,7 +28,7 @@ else
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
-				echo -e "$name: updated to $version.";$name -c;;
+				echo -e "$name: updated to $version.";$name -c;exit 0;;
 			n) echo "$name: not updated.";return;;
 		esac
 	else
