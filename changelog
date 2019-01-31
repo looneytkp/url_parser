@@ -17,6 +17,7 @@ v6.50
 
 v6.55
   - changed '-u' flag for uninstall to '-d'
-  - added '-u' flag to check for updates.
-  - auto update check via git.
+  - create directory for parse at '~/.parseHub'
+  - added '-u' flag to check for updates manually.
+  - added code to automatically check for updates.
   - added install_parse.sh to install parse.

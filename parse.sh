@@ -59,16 +59,17 @@ header(){
 
 update(){
 cd $directory
-old_m=$(sed 's/-.*//' .date)
-old_d=$(sed 's/.*-//' .date)
+old_m=$(sed 's/-.*//' url_parser/.date)
+old_d=$(sed 's/.*-//' url_parser/.date)
 new_m=$(date +%m)
 new_d=$(date +%d)
 month=$(((new_m-old_m)*30))
 day=$((new_d-old_d+month))
 if [ $day -ge 3 ]; then
 	read -n 1 -erp "check for updates ? Y/n : " c4u
-	if [ "$c4u" == y ]; then $0 -u;date +%m-%d > .date;fi
+	if [ "$c4u" == y ]; then $0 -u;date +%m-%d > url_parser/.date;fi
 fi
+cd - > /dev/null
 }
 
 PIO(){
