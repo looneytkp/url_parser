@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-version="v6.55"
+version="v6.50"
 set -e
 if [ ! -e /usr/bin/xclip ]&&[ ! -e /usr/local/bin/xclip ]; then
 	echo -e "install xclip.";exit 0
@@ -59,13 +59,9 @@ header(){
 
 update(){
 cd $directory
-old_m=$(sed 's/-.*//' url_parser/.date)
-old_d=$(sed 's/.*-//' url_parser/.date)
-new_m=$(date +%m)
-new_d=$(date +%d)
-month=$(((new_m-old_m)*30))
-day=$((new_d-old_d+month))
-if [ $day -ge 0 ]; then
+old_m=$(sed 's/-.*//' url_parser/.date);old_d=$(sed 's/.*-//' url_parser/.date)
+new_m=$(date +%m);new_d=$(date +%d);month=$(((new_m-old_m)*30));day=$((new_d-old_d+month))
+if [ $day -ge 3 ]; then
 	read -n 1 -erp "check for updates ? Y/n : " c4u
 	if [ "$c4u" == y ]; then $0 -u;fi
 	date +%m-%d > url_parser/.date
@@ -343,7 +339,8 @@ case $1 in
 			echo "$name is not installed"
 		fi;;
 	-v) echo -e "version: $version.\\nby looneytkp.";;
-	-c)	echo -e "\\nchangelog:\\n  - updated to $version.\\n  - added '-c' flag to display changelog.\\n  - changed '-s' flag to '-p'.\\n  - fixed problem with parsing header.\\n  - track auto parsing progress.\\n  - fixed progress errors.\\n  - updated strings in help.\\n  - display help when when flag is invalid.\\n  - display changelog after update & install.\\n";;
-	-h)	echo -e "\\na simple URL parser.\\nusage: $name [...flag]\\nflags:\\n   480p   -   parse 480p URLs only.\\n   720p   -   parse 720p URLs only.\\n   1080p  -   parse 1080p URLs only.\\n     -p   -   automatic multi-URL parser.\\n     -i   -   install $name.\\n     -  check for updates.\\n     -d   -   uninstall $name.\\n     -c   -   display changelog.\\n     -v   -   display version.\\n     -h   -   display help.\\n";;
-	*)	echo -e "unknown flag: $1.";bash "$0" -h;;
+	-c)	l=$1;export l;bash changelog;;
+	-C) l=$1;export l;bash changelog;;
+	-h)	cat $directory/url_parser/.help;;
+	*)	echo -e "unknown flag: $1.";cat $directory/url_parser/.help;;
 esac
