@@ -65,9 +65,10 @@ new_m=$(date +%m)
 new_d=$(date +%d)
 month=$(((new_m-old_m)*30))
 day=$((new_d-old_d+month))
-if [ $day -ge 3 ]; then
+if [ $day -ge 0 ]; then
 	read -n 1 -erp "check for updates ? Y/n : " c4u
-	if [ "$c4u" == y ]; then $0 -u;date +%m-%d > url_parser/.date;fi
+	if [ "$c4u" == y ]; then $0 -u;fi
+	date +%m-%d > url_parser/.date
 fi
 cd - > /dev/null
 }
@@ -289,7 +290,7 @@ sort(){
 }
 trap sig_abort SIGINT
 arch=$(uname)
-cleanup; update
+cleanup; if [ "$1" != -u ]; then update;fi
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)	
