@@ -18,5 +18,5 @@ v6.50
 v6.55
   - changed '-u' flag for uninstall to '-d'
   - added '-u' flag to check for updates.
-  - auto update check.
+  - auto update check via git.
   - added install_parse.sh to install parse.

@@ -15,9 +15,6 @@ elif [ ! -e /usr/bin/git ]&&[ ! -e /usr/local/bin/git ]; then
 		esac
 	fi
 fi
-if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
-elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
-fi
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
 ct=.ct
 ct2=.ct2
@@ -289,7 +286,6 @@ case $1 in
 	-p)	
 		if [ "$2" != '' ]; then
 			escape=no;nd2="$2";n=$#;n=$((n-1));n1=$n;mul=0;z=0
-			#echo -e "\\n:: auto parsing $n URL(s)..."
 			echo
 			for position;do
 				if [ "$position" == -p ]; then
@@ -319,13 +315,18 @@ case $1 in
 			echo -e ":: no links added."
 		fi;;
 	-u)
-		if [ -e /usr/bin/git ]||[ -e /usr/local/bin/git ]; then
-			cd "$directory"
-			git pull
-		fi
-		
-		;;
+		echo "checking for updates..."
+		cd "$directory"
+		if [ -e url_parser ]; then
+			bash url_parser/install_parse.sh
+		else
+			git clone https://github.com/looneytkp/url_parser.git 2> /dev/null
+			bash url_parser/install_parse.sh
+		fi;;
 	-d)
+		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
+		elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
+		fi
 		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory
 			echo "$name: uninstalled."
 		else

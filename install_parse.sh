@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 if [ ! -e /usr/bin/xclip ]&&[ ! -e /usr/local/bin/xclip ]; then
 	echo -e "install xclip.";exit 0
 elif [ ! -e /usr/bin/wget ]&&[ ! -e /usr/local/bin/wget ]; then
@@ -23,6 +23,8 @@ else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
+		printf %b "                 available: $version.\\r"
+		read -n 1 -erp "update? Y/n: "
 		sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
 		echo -e "$name: updated to $version.";$name -c
 	else
@@ -36,7 +38,7 @@ name="parse"
 _script=parse.sh
 directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
-cd $directory
+if [ "$PWD" != "$directory" ]; then cd $directory; fi
 arch=$(uname)
 if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
@@ -48,5 +50,6 @@ if [ ! -d url_parser ]; then
 	run
 else
 	cd url_parser
+	git pull -q
 	run
 fi
