@@ -2,26 +2,9 @@
 #looneytkp
 version="v6.50"
 set -e
-if [ ! -e /usr/bin/xclip ]&&[ ! -e /usr/local/bin/xclip ]; then
-	echo -e "install xclip.";exit 0
-elif [ ! -e /usr/bin/wget ]&&[ ! -e /usr/local/bin/wget ]; then
-	echo -e "install wget.";exit 0
-elif [ ! -e /usr/bin/git ]&&[ ! -e /usr/local/bin/git ]; then
-	printf "git is not installed."
-	if [ $arch == Darwin ]; then
-		read -erp " install git ? Y/n: " gitInst
-		case $gitInst in
-			Y|y|'') git --version;;
-		esac
-	fi
-fi
+
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
-ct=.ct
-ct2=.ct2
-out=.out
-out2=.out2
-name="parse"
-directory=~/.parseHub
+ct=.ct;ct2=.ct2;out=.out;out2=.out2;name="parse";directory=~/.parseHub;arch=$(uname)
 
 cleanup(){
 	if [ -e .out ]; then rm .out*; fi
@@ -127,27 +110,32 @@ dl(){
 
 final(){
 	echo >> $out && grep -o '.*Season.*' "$file"|head -1 >> $out
-	f=(480p 720p 1080p)
-	for f in "${f[@]}"; do
-		if grep -qioE "$f" "$file"; then
-			grep -E "$f" "$file" > $ct2
-			if grep -qE "(x264|x265)" $ct2; then
-				perg(){ 
-					size=$(wc -l<.ct3)
-					if [ "$size" -ge 1 ]; then echo >> $out;cat .ct3 >> $out;fi;rm .ct3
-				}
-				grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
-			else
-				echo >> $out;grep -E "$f" $ct2 >> $out
+	if ! grep -qE "(480p|720p|1080p)" "$file"; then
+		echo >> $out
+		grep -iowE "$format" "$file" >> $out
+	else
+		f=(480p 720p 1080p)
+		for f in "${f[@]}"; do
+			if grep -qioE "$f" "$file"; then
+				grep -E "$f" "$file" > $ct2
+				if grep -qE "(x264|x265)" $ct2; then
+					perg(){ 
+						size=$(wc -l<.ct3)
+						if [ "$size" -ge 1 ]; then echo >> $out;cat .ct3 >> $out;fi;rm .ct3
+					}
+					grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
+				else
+					echo >> $out;grep -E "$f" $ct2 >> $out
+				fi
+				if grep -qioE "$f.*x264" $ct2; then
+					echo >> $out;grep -oiE ".*$f.*x264" $ct2 >> $out
+				fi
+				if grep -qioE "$f.*x265" $ct2; then
+					echo >> $out;grep -oiE ".*$f.*x265" $ct2 >> $out
+				fi
 			fi
-			if grep -qioE "$f.*x264" $ct2; then
-				echo >> $out;grep -oiE ".*$f.*x264" $ct2 >> $out
-			fi
-			if grep -qioE "$f.*x265" $ct2; then
-				echo >> $out;grep -oiE ".*$f.*x265" $ct2 >> $out
-			fi
-		fi
-	done
+		done
+	fi
 }
 
 parser(){
@@ -214,9 +202,10 @@ edit(){
 			grep -iwE "$1" $out2 >> $out; rm $out2
 		fi
 	fi
-	xclip -sel clip < $out
+	if [ "$arch" == Darwin ]; then cat $out|pbcopy;else xclip -sel clip < $out;fi
 	echo -e "copied to clipboard."
 	rm $out $ct .wget
+	if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi
 	edit "$1"
 }
 
@@ -261,33 +250,30 @@ sort(){
 						echo -e ">>>  paste movie description here  <<<" >> $out
 						for file in "$_dir"/*;do final; done
 						echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out
-						xclip -sel clip < $out
-						if [ "$escape" == yes ]; then echo -e ":: copied to clipboard.\\n"
-							rm $out
-							return
+						if [ "$arch" == Darwin ];then
+							cat $out|pbcopy;else xclip -sel clip < $out
 						fi
+						echo -e ":: copied to clipboard.\\n";rm $out;return
 					fi;;
 				*)
-						lru=$(echo "$url"|grep "http"|| echo false)
-						if [ "$lru" == false ]; then
-								echo ":: error: $url not a URL."
-								echo > $out;size=$(wc -l<$out);abort
-						else
-							dl;header;PIO;rm $ct
-							compare
-							return
-						fi
-					;;
+					lru=$(echo "$url"|grep "http"|| echo false)
+					if [ "$lru" == false ]; then
+						echo ":: error: $url not a URL."
+							echo > $out;size=$(wc -l<$out);abort
+					else
+						dl;header;PIO;rm $ct
+						compare
+						return
+					fi;;
 			esac
 		else
 			break
 		fi
 	done
-	'sort'
 }
+
 trap sig_abort SIGINT
-arch=$(uname)
-cleanup; if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi
+cleanup
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)	
@@ -317,7 +303,7 @@ case $1 in
 			fi				
 			done
 			escape=yes; printf %b ":: assembling...\\r";sleep 1
-			'sort' "$n";abort
+			'sort' "$n";if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi;abort
 		else
 			echo -e ":: no links added."
 		fi;;
@@ -346,4 +332,4 @@ case $1 in
 	*)	echo -e "invalid flag: $1."
 		if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;
 esac
-#end of code
+#end of script
