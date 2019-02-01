@@ -12,7 +12,6 @@ v6_45(){
   - display help when when flag is invalid.
   - display changelog after update & install."
 }
-
 v6_50(){
 	echo -e "\\n  v6.50
   - fixed unary operator bug when parsing a wrong URL.
@@ -29,10 +28,17 @@ v6_50(){
   - made changelog & help standalone.
   - added '-C' to display full changelog'.
   - fixes for parse.sh to run without installing.
-  - detect internet connection in install_parse.sh.\\n"
+  - detect internet connection in install_parse.sh."
+}
+v6_55(){
+	echo -e "\\n  v6.55
+	- use pbcopy instead of xclip on mac.
+	- reformat install_parse.sh & parse.sh.
+	- fixed some URLs not copying to clipboard
+	- removed junk code.\\n"
 }
 
 case $l in
-	-C) printf %b "\\nchangelog:\\r";v6_45 && v6_50;;
-	-c) printf %b "\\nchangelog:\\r";v6_50;;
+	-C) printf %b "\\nchangelog:\\r";v6_45;v6_50;v6_55;;
+	-c) printf %b "\\nchangelog:\\r";v6_55;;
 esac
