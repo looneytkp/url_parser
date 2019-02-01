@@ -5,7 +5,7 @@ run() {
 if [[ ! -e $inst_dir ]]; then
 	echo "installing..."
 	sudo cp "$_script" $inst_dir && sudo chmod 777 $inst_dir
-	date +%m-%d > url_parser/.date
+	date +%m-%d > "$directory"/url_parser/.date
 	echo -e "$name $version: installed.";$name -c
 else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
@@ -18,7 +18,7 @@ else
 				sudo cp -u "$_script" $inst_dir;sudo chmod 777 $inst_dir
 				date +%m-%d > url_parser/.date
 				echo -e "$name: updated to $version.";$name -c;exit 0;;
-			n) echo "$name: not updated.";date +%m-%d > url_parser/.date;return;;
+			n) echo "$name: not updated.";date +%m-%d > "$directory"/url_parser/.date;return;;
 		esac
 	else
 		echo -e "$name: up-to-date -- $version."
