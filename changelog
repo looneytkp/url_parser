@@ -32,10 +32,10 @@ v6_50(){
 }
 v6_55(){
 	echo -e "\\n  v6.55
-	- use pbcopy instead of xclip on mac.
-	- reformat install_parse.sh & parse.sh.
-	- fixed some URLs not copying to clipboard
-	- removed junk code.\\n"
+  - use pbcopy instead of xclip on mac.
+  - reformat install_parse.sh & parse.sh.
+  - fixed some URLs not copying to clipboard
+  - removed junk code.\\n"
 }
 
 case $l in
