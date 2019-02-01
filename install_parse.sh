@@ -22,7 +22,7 @@ else
 		esac
 	else
 		echo -e "$name: up-to-date -- $version."
-		date +%m-%d > url_parser/.date
+		date +%m-%d > "$directory"/url_parser/.date
 	fi
 fi
 }
