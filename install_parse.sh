@@ -43,7 +43,7 @@ elif [ "$arch" == Linux ]; then
 	elif [ ! -e /usr/bin/git ]; then echo "install git.";exit 0
 	fi
 fi	
-version="v6.50";name="parse";_script=$name.sh
+version="v6.55";name="parse";_script=$name.sh
 directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
 if [ "$PWD" != "$directory" ]; then cd $directory; fi
