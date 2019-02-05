@@ -35,10 +35,15 @@ v6_55(){
   - use pbcopy instead of xclip on mac.
   - reformat install_parse.sh & parse.sh.
   - fixed some URLs not copying to clipboard
-  - removed junk code.\\n"
+  - removed junk code."
+}
+v6_60(){
+	echo -e "\\n  v6.60
+  - possible fix for sed causing errors.
+  - changed header to title.\\n"
 }
 
 case $l in
-	-C) printf %b "\\nchangelog:\\r";v6_45;v6_50;v6_55;;
-	-c) printf %b "\\nchangelog:\\r";v6_55;;
+	-C) printf %b "\\nchangelog:\\r";v6_45;v6_50;v6_55;v6_60;;
+	-c) printf %b "\\nchangelog:\\r";v6_60;;
 esac
