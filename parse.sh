@@ -30,7 +30,7 @@ abort(){
 	exit 0		
 }
 
-header(){
+title(){
 	{
 		if grep -qioE "s[0-9][0-9]" $ct; then
 			_a=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
@@ -189,16 +189,16 @@ edit(){
 		if [ "$lru" == false ]; then echo -e "invalid: $url.";b=$((b-1));edit;fi
 	fi
 	printf %b "                   [Y/n]\\r"
-	read -n 1 -erp "add header?: " h
+	read -n 1 -erp "add title?: " h
 	if [ "$1" == '' ]; then
-		if [ "$h" == y ]||[ "$h" == '' ]; then dl;header;PIO;else dl;PIO;fi
+		if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
 	else
 		dl
 		if ! grep -q "$pixel" $ct; then
 			echo -e "$pixel: no such text.\\n"; abort
 		else
 			PIO; mv $out $out2
-			if [ "$h" == y ]||[ "$h" == '' ]; then header; fi
+			if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
 			grep -iwE "$1" $out2 >> $out; rm $out2
 		fi
 	fi
@@ -261,7 +261,7 @@ sort(){
 						echo ":: error: $url not a URL."
 							echo > $out;size=$(wc -l<$out);abort
 					else
-						dl;header;PIO;rm $ct
+						dl;title;PIO;rm $ct
 						compare
 						return
 					fi;;
@@ -276,7 +276,8 @@ trap sig_abort SIGINT
 cleanup
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
-	-p)	
+	-p)
+		touch $out
 		if [ "$2" != '' ]; then
 			escape=no;nd2="$2";n=$#;n=$((n-1));n1=$n;mul=0;z=0
 			echo
@@ -306,6 +307,7 @@ case $1 in
 			'sort' "$n";if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi;abort
 		else
 			echo -e ":: no links added."
+			cleanup
 		fi;;
 	-u)
 		echo "checking for updates..."
