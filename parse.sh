@@ -15,50 +15,40 @@ cleanup(){
 }
 
 sig_abort(){
-	cleanup
-	echo -e "\\naborted.\\n"
-	exit 0
+	cleanup && echo -e "\\naborted.\\n" && exit 0
 }
 
 abort(){
 	cleanup
-	if [ "$nd2" != '' ]; then
-		echo > /dev/null
-	else
-		echo -e "aborted.\\n"
+	if [ "$nd2" != '' ]; then echo > /dev/null
+	else echo -e "aborted.\\n"
 	fi
 	exit 0		
 }
 
 title(){
-	{
-		if grep -qioE "s[0-9][0-9]" $ct; then
+	{ if grep -qioE "s[0-9][0-9]" $ct; then
 			_a=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
 			sed -e "s/[S-s]/<h3>Season /" -e 's/$/<\/h3>/')
 			echo "$_a"
-		fi
+	  fi
 	} >> $out
 }
 
 update(){
 if [ ! -d $directory ]; then return;fi
-cd $directory
-old_m=$(sed 's/-.*//' url_parser/.date);old_d=$(sed 's/.*-//' url_parser/.date)
+cd $directory;old_m=$(sed 's/-.*//' url_parser/.date);old_d=$(sed 's/.*-//' url_parser/.date)
 new_m=$(date +%m);new_d=$(date +%d);month=$(((new_m-old_m)*30));day=$((new_d-old_d+month))
-if [ $day -ge 3 ]; then
-	read -n 1 -erp "check for updates ? Y/n : " c4u
-	if [ "$c4u" == y ]; then $0 -u;fi
-	date +%m-%d > url_parser/.date
+if [ $day -ge 3 ]; then read -n 1 -erp "check for updates ? Y/n : " c4u
+	if [ "$c4u" == y ]; then $0 -u;fi;date +%m-%d > url_parser/.date
 fi
 cd - > /dev/null
 }
 
 PIO(){
 	c=1
-	while true; do
-		if [ $c -gt 9 ]; then d="(e$c|e$c)";else d="(e$c|e0$c)";fi
-		if grep -qiwE ".*$d" $ct; then
-			grep -iwE ".*$d" $ct >> $ct2
+	while true; do if [ $c -gt 9 ]; then d="(e$c|e$c)";else d="(e$c|e0$c)";fi
+		if grep -qiwE ".*$d" $ct; then grep -iwE ".*$d" $ct >> $ct2
 		else
 			if [ -e $ct2 ]; then mv $ct2 $ct;fi;break
 		fi
@@ -72,7 +62,7 @@ connect(){
 	if [ $exitStatus == 0 ]; then
 		if [ "$nd2" != '' ];then
 			if grep -q "404" .wget;then echo ":: error 404: not found."
-			elif grep -q "Name orservice not known" .wget; then
+			elif grep -q "Name orservice not known" .wget;then
 				echo ":: service unknown: '$url'"
 			fi
 		else
@@ -92,32 +82,23 @@ connect(){
 dl(){
 	wget -k "$url" -o .wget -O $ct||connect
 	if ! grep -qE "$format" $ct; then
-		if [ "$nd2" != '' ]; then
-			echo -e ":: error: $url\\n"
-		else
-			echo -e "error: $url\\n"
-		fi
+		if [ "$nd2" != '' ];then echo -e ":: error: $url\\n" else echo -e "error: $url\\n";fi
 		abort
 	fi
-	if grep -iqE '(&amp|&darr)' $ct; then
-		grep -vE '.*(amp|darr).*' $ct > $ct2;mv $ct2 $ct
-	fi
-	if grep -qioE "trailer" $ct; then
-		echo 'Trailer' >> $out
+	if grep -iqE '(&amp|&darr)' $ct; then grep -vE '.*(amp|darr).*' $ct > $ct2;mv $ct2 $ct;fi
+	if grep -qioE "trailer" $ct; then echo 'Trailer' >> $out
 		grep -iwE ".*trailer.*</a>" $ct|sed 's:.*<a:<a:';echo >> $out
 	fi
 }
 
 final(){
 	echo >> $out && grep -o '.*Season.*' "$file"|head -1 >> $out
-	if ! grep -qE "(480p|720p|1080p)" "$file"; then
-		echo >> $out
+	if ! grep -qE "(480p|720p|1080p)" "$file"; then echo >> $out
 		grep -iowE "$format" "$file" >> $out
 	else
 		f=(480p 720p 1080p)
 		for f in "${f[@]}"; do
-			if grep -qioE "$f" "$file"; then
-				grep -E "$f" "$file" > $ct2
+			if grep -qioE "$f" "$file"; then grep -E "$f" "$file" > $ct2
 				if grep -qE "(x264|x265)" $ct2; then
 					perg(){ 
 						size=$(wc -l<.ct3)
@@ -183,11 +164,8 @@ header(){
 }
 
 edit(){
-	if [ "$1" == '' ]; then
-		pixel=url
-		printf %b "          [paste any valid URL]\\r"
-	else
-		pixel=$1;printf %b "          [paste only $pixel URLs]\\r"
+	if [ "$1" == '' ]; then pixel=url;printf %b "          [paste any valid URL]\\r"
+	else pixel=$1;printf %b "          [paste only $pixel URLs]\\r"
 	fi
 	read -erp "$pixel: " url
 	if [ "$url" == "" ]; then
@@ -207,14 +185,12 @@ edit(){
 		fi
 	else
 		dl
-		if ! grep -q "$pixel" $ct; then
-			echo -e "$pixel: no such text.\\n"; abort
+		if ! grep -q "$pixel" $ct; then echo -e "$pixel: no such text.\\n";abort
 		else
 			if [ "$USER" == "Blues-MacBook" ]; then header top
 				PIO; mv $out $out2
 				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
-				grep -iwE "$1" $out2 >> $out; rm $out2
-				header
+				grep -iwE "$1" $out2 >> $out; rm $out2;header
 			else
 				PIO; mv $out $out2
 				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
@@ -222,11 +198,10 @@ edit(){
 			fi
 		fi
 	fi
-	if [ "$arch" == Darwin ]; then cat $out|pbcopy;else xclip -sel clip < $out;fi
+	if [ "$arch" == "Darwin" ]; then pbcopy < $out;else xclip -sel clip < $out;fi
 	echo -e "copied to clipboard."
 	rm $out $ct .wget
-	if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi
-	edit "$1"
+	if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi;edit "$1"
 }
 
 sort(){
@@ -243,23 +218,18 @@ sort(){
 				true
 			fi
 			cat $out >> "$_dir/s$cmpr";unset cmpr
-			if [ "$arch" = Darwin ]; then rm $out && touch $out; else truncate -s 0 $out;fi
+			if [ "$arch" = "Darwin" ]; then rm $out && touch $out; else truncate -s 0 $out;fi
 			status=0
 		fi
 	}
-	_dir=.editmp
-	if [ ! -d $_dir ]; then mkdir $_dir;fi
-	a=0;b=1;d=0
-	escape=$(echo "$escape")
+	_dir=".editmp";if [ ! -d $_dir ];then mkdir $_dir;fi;a=0;b=1;d=0;escape=$(echo "$escape")
 	while true;do
 		if [ $b -ge 10 ]; then d="";srt="$d$b"
-		elif [ $b -le 10 ]; then if [ $b -eq 0 ]; then b=1; else d=0;srt="$d$b"; fi
+		elif [ $b -le 10 ]; then if [ $b -eq 0 ]; then b=1; else d=0;srt="$d$b";fi
 		fi
 		if [ $a != 1 ]; then
-			if [ "$escape" == no ]; then
-				url=$position
-			elif [ "$escape" == yes ]; then
-				url=""
+			if [ "$escape" == no ]; then url=$position
+			elif [ "$escape" == yes ]; then url=""
 			fi
 			case "$url" in
 				"")
@@ -267,10 +237,10 @@ sort(){
 						abort
 					else
 						header top
-						for file in "$_dir"/*;do final; done
+						for file in "$_dir"/*;do final;done
 						header
 						if [ "$arch" == Darwin ];then
-							cat "$out"|pbcopy;else xclip -sel clip < $out
+							pbcopy < $out;else xclip -sel clip < $out
 						fi
 						echo -e ":: copied to clipboard.\\n";rm $out;return
 					fi;;
@@ -291,8 +261,7 @@ sort(){
 	done
 }
 
-trap sig_abort SIGINT
-cleanup
+trap sig_abort SIGINT;cleanup
 case $1 in
 	""|480p|480P|720p|720P|1080p|1080P)	echo;edit "$1";;
 	-p)
@@ -307,44 +276,34 @@ case $1 in
 					printf %b ":: auto parsing $n URL(s): $mul%\\r"
 					'sort' "$position"
 					if [ "$status" == 1 ]; then
-						if grep -qo "404" .wget; then
-							fb="404 not found"
-						elif grep -qo "521" .wget; then
-							fb="origin down"
+						if grep -qo "404" .wget; then fb="404 not found"
+						elif grep -qo "521" .wget; then fb="origin down"
 						fi
-						echo -e ":: $fb: $url.\\n"
-						abort
+						echo -e ":: $fb: $url.\\n";abort
 					fi
 				fi
 			div=$((100/n1));mod=$((100%div));z=$((z+1));mul=$((div*z))
 			if [ $z == $n1 ]; then 
-				mul=$((mul+mod));echo ":: auto parsing $n URL(s): $mul%"
-				break
+				mul=$((mul+mod));echo ":: auto parsing $n URL(s): $mul%";break
 			fi				
 			done
 			escape=yes; printf %b ":: assembling...\\r";sleep 1
 			'sort' "$n";if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi;abort
 		else
-			echo -e ":: no links added."
-			cleanup
+			echo -e ":: no links added.";cleanup
 		fi;;
 	-u)
-		echo "checking for updates..."
-		cd "$directory"
-		if [ -e url_parser ]; then
-			bash url_parser/install_parse.sh
-		else
-			git clone https://github.com/looneytkp/url_parser.git 2> /dev/null
+		echo "checking for updates...";cd "$directory"
+		if [ -e url_parser ]; then bash url_parser/install_parse.sh
+		else git clone https://github.com/looneytkp/url_parser.git 2> /dev/null
 			bash url_parser/install_parse.sh
 		fi;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 		elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 		fi
-		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory
-			echo "$name: uninstalled."
-		else
-			echo "$name is not installed"
+		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory;echo "$name: uninstalled."
+		else echo "$name is not installed"
 		fi;;
 	-v) echo -e "version: $version.\\nby looneytkp.";;
 	-c)	l=$1;export l;bash $directory/url_parser/changelog;;
