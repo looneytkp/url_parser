@@ -40,7 +40,7 @@ v6_60(){
   - possible fix for sed causing errors.
   - changed header to title.
   - enable header when for Blues-Macbook.
-  - reformat parse code.
+  - rework parse code.
   - changelog updated.\\n";}
 
 case "$l" in
