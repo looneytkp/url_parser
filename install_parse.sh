@@ -11,12 +11,12 @@ else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
-		printf %b "                 > $name $new_version available.\\r"
+		printf %b "                 > $name $version available.\\r"
 		read -n 1 -erp "update? Y/n: " update
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" $inst_dir;sudo chmod 777 "$inst_dir"
-				date +%m-%d > url_parser/.date
+				date +%m-%d > $directory/url_parser/.date
 				echo -e "$name: updated to $version.";$name -c;exit 0;;
 			n) echo "$name: not updated.";date +%m-%d > "$directory"/url_parser/.date;return;;
 		esac
@@ -43,7 +43,7 @@ elif [ "$arch" == Linux ]; then
 	elif [ ! -e /usr/bin/git ]; then echo "install git.";exit 0
 	fi
 fi	
-version="v6.55";new_version="v6.60";name="parse";_script=$name.sh
+version="v6.60";name="parse";_script=$name.sh
 directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
 if [ "$PWD" != "$directory" ]; then cd $directory; fi
