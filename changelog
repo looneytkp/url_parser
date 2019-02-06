@@ -40,7 +40,9 @@ v6_55(){
 v6_60(){
 	echo -e "\\n  v6.60
   - possible fix for sed causing errors.
-  - changed header to title.\\n"
+  - changed header to title.
+  - enable header when for Blues-Macbook.
+  - fixes in changelog & parse.\\n"
 }
 
 case $l in

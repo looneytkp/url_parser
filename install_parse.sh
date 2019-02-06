@@ -11,7 +11,6 @@ else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
-		new_version="v6.60"
 		printf %b "                 > $name $new_version available.\\r"
 		read -n 1 -erp "update? Y/n: " update
 		case $update in
@@ -44,7 +43,7 @@ elif [ "$arch" == Linux ]; then
 	elif [ ! -e /usr/bin/git ]; then echo "install git.";exit 0
 	fi
 fi	
-version="v6.55";name="parse";_script=$name.sh
+version="v6.55";new_version="v6.60";name="parse";_script=$name.sh
 directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
 if [ "$PWD" != "$directory" ]; then cd $directory; fi

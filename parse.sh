@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-version="v6.55"
+version="v6.60"
 set -e
 
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
@@ -174,6 +174,14 @@ parser(){
 	if [ -e $ct2 ]; then rm .ct[2-3];fi
 }
 
+header(){
+	if [ "$1" == top ]; then
+		echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n\\n>>>  paste movie description here  <<<\\n" > $out
+	else
+		echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out
+	fi
+}
+
 edit(){
 	if [ "$1" == '' ]; then
 		pixel=url
@@ -191,15 +199,27 @@ edit(){
 	printf %b "                   [Y/n]\\r"
 	read -n 1 -erp "add title?: " h
 	if [ "$1" == '' ]; then
-		if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
+		if [ "$USER" == "Blues-MacBook" ]; then header top
+			if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
+			header
+		else
+			if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
+		fi
 	else
 		dl
 		if ! grep -q "$pixel" $ct; then
 			echo -e "$pixel: no such text.\\n"; abort
 		else
-			PIO; mv $out $out2
-			if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
-			grep -iwE "$1" $out2 >> $out; rm $out2
+			if [ "$USER" == "Blues-MacBook" ]; then header top
+				PIO; mv $out $out2
+				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
+				grep -iwE "$1" $out2 >> $out; rm $out2
+				header
+			else
+				PIO; mv $out $out2
+				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
+				grep -iwE "$1" $out2 >> $out; rm $out2
+			fi
 		fi
 	fi
 	if [ "$arch" == Darwin ]; then cat $out|pbcopy;else xclip -sel clip < $out;fi
@@ -246,12 +266,11 @@ sort(){
 					if [ -z "$(ls -A $_dir)" ]; then
 						abort
 					else
-						echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n" > $out
-						echo -e ">>>  paste movie description here  <<<" >> $out
+						header top
 						for file in "$_dir"/*;do final; done
-						echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out
+						header
 						if [ "$arch" == Darwin ];then
-							cat $out|pbcopy;else xclip -sel clip < $out
+							cat "$out"|pbcopy;else xclip -sel clip < $out
 						fi
 						echo -e ":: copied to clipboard.\\n";rm $out;return
 					fi;;

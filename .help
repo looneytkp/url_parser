@@ -2,15 +2,15 @@
 a simple URL parser.
 usage: parse [...flag]
 flags:
-   480p   -   parse 480p URLs only.
-   720p   -   parse 720p URLs only.
-   1080p  -   parse 1080p URLs only.
-     -p   -   automatic multi-URL parser.
-     -i   -   install parse.
-     -u   -   check for updates.
-     -d   -   uninstall parse.
-     -c   -   display current changelog.
-     -C   -   display full changelog.
-     -v   -   display parse version.
-     -h   -   display help or info.
+   480p     -   parse 480p URLs only.
+   720p     -   parse 720p URLs only.
+   1080p    -   parse 1080p URLs only.
+      -p    -   automatic multi-URL parser.
+      -i    -   install parse.
+      -u    -   check for updates.
+      -d    -   uninstall parse.
+      -c    -   display current changelog.
+      -C    -   display full changelog.
+      -v    -   display parse version.
+      -h    -   display help or info.
 
