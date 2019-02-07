@@ -5,19 +5,19 @@ set -e
 run() {
 if [[ ! -e $inst_dir ]]; then
 	echo "installing..."
-	sudo cp "$_script" $inst_dir && sudo chmod 777 $inst_dir
+	sudo cp "$_script" "$inst_dir" && sudo chmod 777 "$inst_dir"
 	date +%m-%d > "$directory"/url_parser/.date
 	echo -e "$name $version: installed.";$name -c
 else
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
-	b=$(md5sum $inst_dir|sed "s:  $inst_dir::")
+	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then
 		printf %b "                 > $name $version available.\\r"
 		read -n 1 -erp "update? Y/n: " update
 		case $update in
 			Y|y|'')
-				sudo cp -u "$_script" $inst_dir;sudo chmod 777 "$inst_dir"
-				date +%m-%d > $directory/url_parser/.date
+				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
+				date +%m-%d > "$directory"/url_parser/.date
 				echo -e "$name: updated to $version.";$name -c;exit 0;;
 			n) echo "$name: not updated.";date +%m-%d > "$directory"/url_parser/.date;return;;
 		esac

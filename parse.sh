@@ -177,7 +177,7 @@ edit(){
 	printf %b "                   [Y/n]\\r"
 	read -n 1 -erp "add title?: " h
 	if [ "$1" == '' ]; then
-		if [ "$USER" == "Blues-MacBook" ]; then header top
+		if ! grep 0 "$directory/url_parser/.conf"; then header top
 			if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
 			header
 		else
@@ -187,7 +187,7 @@ edit(){
 		dl
 		if ! grep -q "$pixel" $ct; then echo -e "$pixel: no such text.\\n";abort
 		else
-			if [ "$USER" == "Blues-MacBook" ]; then header top
+			if ! grep 0 "$directory/url_parser/.conf"; then header top
 				PIO; mv $out $out2
 				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
 				grep -iwE "$1" $out2 >> $out; rm $out2;header
@@ -305,7 +305,7 @@ case $1 in
 		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory;echo "$name: uninstalled."
 		else echo "$name is not installed"
 		fi;;
-	-v) echo -e "version: $version.\\nby looneytkp.";;
+	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp.\\n<https://github.com/looneytkp/url_parser>.";;
 	-c)	l=$1;export l;bash $directory/url_parser/changelog;;
 	-C) l=$1;export l;bash $directory/url_parser/changelog;;
 	-h)	if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;

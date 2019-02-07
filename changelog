@@ -39,8 +39,8 @@ v6_60(){
 	echo -e "\\n  v6.60
   - possible fix for sed causing errors.
   - changed header to title.
-  - enable header when for Blues-Macbook.
-  - rework parse code.
+  - option to enable or disable header.
+  - rework code.
   - changelog updated.\\n";}
 
 case "$l" in
