@@ -46,7 +46,6 @@ else
 			n) echo "$name: not updated.";date +%m-%d > .date;return;;
 		esac
 	else
-		echo $PWD
 		x=$(cat install_parse.sh changelog .conf .help|md5sum)
 		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.conf "$directory"/.help|md5sum)
 		if [ "$x" != "$y" ];then
