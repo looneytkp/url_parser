@@ -1,7 +1,7 @@
 #!/bin/bash
 #looneytkp
 set -e
-version="v6.60b"
+version="v6.60"
 
 connect(){
 	echo "no internet connection."
