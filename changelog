@@ -39,7 +39,7 @@ new(){
   - option to enable or disable header(disabled by default).
   - bug fixes & improvements.\\n";}
 
-case "$1" in
+case "$l" in
 	-C) printf %b "\\nchangelog:\\r";old && new;;
 	-c) printf %b "\\nchangelog:\\r";new;;
 esac
