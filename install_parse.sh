@@ -1,6 +1,7 @@
 #!/bin/bash
 #looneytkp
 set -e
+version="v6.60b"
 
 connect(){
 	echo "no internet connection."
@@ -65,7 +66,7 @@ elif [ "$arch" == Linux ]; then
 	elif [ ! -e /usr/bin/git ]; then echo "install git.";exit 0
 	fi
 fi	
-version="v6.60b";name="parse";_script=$name.sh
+name="parse";_script=$name.sh
 arch=$(uname)
 if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
