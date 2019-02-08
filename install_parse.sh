@@ -46,10 +46,7 @@ else
 			n) echo "$name: not updated.";date +%m-%d > .date;return;;
 		esac
 	else
-		_changelog=
-		_conf=
-		_date=
-		_installParse=
+		#
 		date +%m-%d > .date
 		echo -e "$name: up-to-date -- $version."
 	fi
