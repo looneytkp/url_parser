@@ -26,7 +26,7 @@ if [[ ! -e $inst_dir ]]; then
 		rm -rf "$directory"
 		echo "$name not installed."
 	else
-		cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
+		cp {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
 		cd - > /dev/null;date +%m-%d > .date
 		echo -e "$name $version: installed."; $name -h
 	fi
