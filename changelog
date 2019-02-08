@@ -34,7 +34,7 @@ old(){
   - fixed some URLs not copying to clipboard
   - removed junk code.";}
 new(){
-	echo -e "\\n  v6.60
+	echo -e "\\n  v6.60b
   - possible fix for sed causing errors.
   - option to enable or disable header(disabled by default).
   - bug fixes & improvements.\\n";}

@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-version="v6.60"
+version="v6.60b"
 set -e
 
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
