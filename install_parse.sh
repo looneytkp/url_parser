@@ -46,9 +46,15 @@ else
 			n) echo "$name: not updated.";date +%m-%d > .date;return;;
 		esac
 	else
-		#
+		x=$(cat install_parse.sh changelog .conf .date .help|md5sum)
+		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.conf "$directory"/.date "$directory"/.help|md5sum)
+		if [ "$x" != "$y" ];then
+			cp -u {install_parse.sh,changelog,.conf,.date,.help} "$directory"
+			echo -e "components updated.\\n$name: up-to-date -- $version."
+		else
+			echo -e "$name: up-to-date -- $version."
+		fi
 		date +%m-%d > .date
-		echo -e "$name: up-to-date -- $version."
 	fi
 fi
 }
@@ -79,21 +85,17 @@ directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
 if [ "$PWD" != "$directory" ]; then cd $directory; fi
 if [ ! -d url_parser ]; then
-	echo 1
 	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run
 elif [ -z "$(ls -A url_parser)" ]; then
-	echo 2
 	rm -rf url_parser
 	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run
 else
-	echo 3
-	if [ -e "$inst_dir" ];then echo "installing...";fi
 	cd url_parser
 	git pull -q 2> /dev/null||connect;cd - > /dev/null
 	run
