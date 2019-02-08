@@ -12,7 +12,7 @@ old(){
   - updated strings in help.
   - display help when when flag is invalid.
   - display changelog after update & install.\\n
-    v6.50
+  v6.50
   - fixed unary operator bug when parsing a wrong URL.
   - improved connection error detection.
   - workaround truncate error for mac.
@@ -28,7 +28,7 @@ old(){
   - added '-C' to display full changelog'.
   - fixes for parse.sh to run without installing.
   - detect internet connection in install_parse.sh.\\n
-    v6.55
+  v6.55
   - use pbcopy instead of xclip on mac.
   - reformat install_parse.sh & parse.sh.
   - fixed some URLs not copying to clipboard

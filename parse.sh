@@ -305,7 +305,7 @@ case $1 in
 		if [ -e $inst_dir ]; then sudo rm -rf $inst_dir $directory;echo "$name: uninstalled."
 		else echo "$name is not installed"
 		fi;;
-	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp.\\n<https://github.com/looneytkp/url_parser>.";;
+	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp. <https://github.com/looneytkp/url_parser>.";;
 	-c)	l=$1;export l;bash "$directory"/url_parser/changelog;;
 	-C) l=$1;export l;bash "$directory"/url_parser/changelog;;
 	-h)	if [ -d "$directory"/url_parser ]; then cat "$directory"/url_parser/.help;fi;;
