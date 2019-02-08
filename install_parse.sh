@@ -31,6 +31,7 @@ if [[ ! -e $inst_dir ]]; then
 		echo -e "$name $version: installed."; $name -h
 	fi
 else
+	cd url_parser
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then $name -c
@@ -39,8 +40,8 @@ else
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
-				cp -u url_parser/{changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
-				date +%m-%d > .date
+				cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
+				cd - > /dev/null;date +%m-%d > .date
 				echo -e "$name updated.";exit 0;;
 			n) echo "$name: not updated.";date +%m-%d > .date;return;;
 		esac
@@ -84,9 +85,10 @@ if [ ! -d url_parser ]; then
 elif [ -z "$(ls -A url_parser)" ]; then
 	rm -rf url_parser
 	echo "installing..."
-	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+	 git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	run
 else
-	git pull 2> /dev/null||connect
+	cd url_parser
+	git pull -q 2> /dev/null||connect;cd - > /dev/null
 	run
 fi

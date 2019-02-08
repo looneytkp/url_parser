@@ -294,9 +294,9 @@ case $1 in
 		fi;;
 	-u)
 		echo "checking for updates...";cd "$directory"
-		if [ -e url_parser ]; then bash url_parser/install_parse.sh
+		if [ -e url_parser ]; then bash install_parse.sh
 		else git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null
-			bash url_parser/install_parse.sh
+			bash install_parse.sh
 		fi;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
