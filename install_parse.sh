@@ -26,12 +26,12 @@ if [[ ! -e $inst_dir ]]; then
 		rm -rf "$directory"
 		echo "$name not installed."
 	else
-		cp -u url_parser/{changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
-		date +%m-%d > .date
+		cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
+		cd - > /dev/null;date +%m-%d > .date
 		echo -e "$name $version: installed."; $name -h
 	fi
 else
-	cd url_parser
+	if [ -d url_parser ]; then cd url_parser; fi
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
 	if [[ "$a" != "$b" ]]; then $name -c
@@ -78,16 +78,21 @@ directory=~/.parseHub
 if [ ! -d $directory ]; then mkdir $directory;fi
 if [ "$PWD" != "$directory" ]; then cd $directory; fi
 if [ ! -d url_parser ]; then
+	echo 1
 	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run
 elif [ -z "$(ls -A url_parser)" ]; then
+	echo 2
 	rm -rf url_parser
 	echo "installing..."
-	 git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+	cd url_parser
 	run
 else
+	echo 3
+	if [ -e "$inst_dir" ];then echo "installing...";fi
 	cd url_parser
 	git pull -q 2> /dev/null||connect;cd - > /dev/null
 	run
