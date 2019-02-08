@@ -96,7 +96,5 @@ elif [ -z "$(ls -A url_parser)" ]; then
 	cd url_parser
 	run
 else
-	cd url_parser
-	git pull -q 2> /dev/null||connect;cd - > /dev/null
 	run
 fi
