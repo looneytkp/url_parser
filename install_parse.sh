@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-set -ex
+set -e
 version="v6.60"
 
 connect(){
@@ -42,13 +42,13 @@ else
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
 				cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
 				cd - > /dev/null;date +%m-%d > .date
-				echo -e "$name updated.";exit 0;;
+				echo -e "$name & components updated.";exit 0;;
 			n) echo "$name: not updated.";date +%m-%d > .date;return;;
 		esac
 	else
 		echo $PWD
-		x=$(cat install_parse.sh changelog .conf .date .help|md5sum)
-		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.conf "$directory"/.date "$directory"/.help|md5sum)
+		x=$(cat install_parse.sh changelog .conf .help|md5sum)
+		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.conf "$directory"/.help|md5sum)
 		if [ "$x" != "$y" ];then
 			cp -u {install_parse.sh,changelog,.conf,.date,.help} "$directory"
 			echo -e "components updated.\\n$name: up-to-date -- $version."
