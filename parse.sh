@@ -311,7 +311,7 @@ case $1 in
 	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp. <https://github.com/looneytkp/url_parser>.";;
 	-c)	l=$1;export l;bash "$directory"/changelog;;
 	-C) l=$1;export l;bash "$directory"/changelog;;
-	-h)	if [ -d "$directory" ]; then cat "$directory".help;fi;;
+	-h)	if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
 	*)	echo -e "invalid flag: $1."
 		if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
 esac
