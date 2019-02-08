@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-set -e
+set -ex
 version="v6.60"
 
 connect(){
