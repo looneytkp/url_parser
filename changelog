@@ -2,7 +2,7 @@
 #looneytkp
 set -e
 
-v6_45(){
+old(){
 	echo -e "\\n  v.6.45
   - added '-c' flag to display changelog.
   - changed '-s' flag to '-p'.
@@ -11,9 +11,8 @@ v6_45(){
   - fixed progress errors.
   - updated strings in help.
   - display help when when flag is invalid.
-  - display changelog after update & install.";}
-v6_50(){
-	echo -e "\\n  v6.50
+  - display changelog after update & install.\\n
+    v6.50
   - fixed unary operator bug when parsing a wrong URL.
   - improved connection error detection.
   - workaround truncate error for mac.
@@ -28,22 +27,19 @@ v6_50(){
   - made changelog & help standalone.
   - added '-C' to display full changelog'.
   - fixes for parse.sh to run without installing.
-  - detect internet connection in install_parse.sh.";}
-v6_55(){
-	echo -e "\\n  v6.55
+  - detect internet connection in install_parse.sh.\\n
+    v6.55
   - use pbcopy instead of xclip on mac.
   - reformat install_parse.sh & parse.sh.
   - fixed some URLs not copying to clipboard
   - removed junk code.";}
-v6_60(){
+new(){
 	echo -e "\\n  v6.60
   - possible fix for sed causing errors.
-  - changed header to title.
-  - option to enable or disable header.
-  - rework code.
-  - changelog updated.\\n";}
+  - option to enable or disable header(disabled by default).
+  - bug fixes & improvements.\\n";}
 
-case "$l" in
-	-C) printf %b "\\nchangelog:\\r";v6_45;v6_50;v6_55;v6_60;;
-	-c) printf %b "\\nchangelog:\\r";v6_60;;
+case "$1" in
+	-C) printf %b "\\nchangelog:\\r";old && new;;
+	-c) printf %b "\\nchangelog:\\r";new;;
 esac

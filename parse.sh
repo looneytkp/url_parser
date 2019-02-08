@@ -295,7 +295,7 @@ case $1 in
 	-u)
 		echo "checking for updates...";cd "$directory"
 		if [ -e url_parser ]; then bash url_parser/install_parse.sh
-		else git clone https://github.com/looneytkp/url_parser.git 2> /dev/null
+		else git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null
 			bash url_parser/install_parse.sh
 		fi;;
 	-d)
@@ -306,10 +306,10 @@ case $1 in
 		else echo "$name is not installed"
 		fi;;
 	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp.\\n<https://github.com/looneytkp/url_parser>.";;
-	-c)	l=$1;export l;bash $directory/url_parser/changelog;;
-	-C) l=$1;export l;bash $directory/url_parser/changelog;;
-	-h)	if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;
+	-c)	l=$1;export l;bash "$directory"/url_parser/changelog;;
+	-C) l=$1;export l;bash "$directory"/url_parser/changelog;;
+	-h)	if [ -d "$directory"/url_parser ]; then cat "$directory"/url_parser/.help;fi;;
 	*)	echo -e "invalid flag: $1."
-		if [ -d $directory/url_parser ]; then cat $directory/url_parser/.help;fi;;
+		if [ -d "$directory"/url_parser ]; then cat "$directory"/url_parser/.help;fi;;
 esac
 #end of script
