@@ -313,12 +313,15 @@ case $1 in
 			git pull -q 2> /dev/null||connect)
 			bash url_parser/install_parse.sh
 		else
-			echo "error: reinstalling $name."
-			git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
-			cp url_parser/install_parse.sh ~/Downloads
-			(cd ~/Downloads;bash ~/Downloads/install_parse.shrm ~/Downloads/install_parse.sh)
+			printf "error: ";$0 -r
 		fi||
-		echo "error: reinstall $name.";exit;;
+		printf "error: ";$0 -r;exit;;
+	-r)
+		r=$1;export r
+		echo "reinstalling $name..."
+		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+		cp url_parser/install_parse.sh ~/Downloads
+		(cd ~/Downloads;bash ~/Downloads/install_parse.sh;rm ~/Downloads/install_parse.sh);;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
