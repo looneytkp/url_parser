@@ -321,7 +321,7 @@ case $1 in
 		else
 			printf "error: ";$name -r
 		fi||
-		printf "error: ";$name -r;exit;;
+		printf "error: " && $name -r && exit 0;;
 	-r)
 		r=$1;export r
 		echo "reinstalling $name..."
