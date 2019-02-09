@@ -96,13 +96,13 @@ if [ ! -d $directory ]; then
 fi
 if [ "$PWD" != "$directory" ]; then cd $directory;fi
 if [ ! -d url_parser ]; then
-	if [ "$r" == -r ]; then echo "installing...";fi
+	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run && exit
 elif [ -z "$(ls -A url_parser)" ]; then
 	rm -rf url_parser
-	if [ "$r" == -r ];then echo "installing...";fi
+	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run

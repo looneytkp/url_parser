@@ -323,7 +323,6 @@ case $1 in
 		fi||
 		printf "error: " && $name -r && exit 0;;
 	-r)
-		r=$1;export r
 		echo "reinstalling $name..."
 		if [ ! -d "$directory" ];then
 			mkdir "$directory" && cd "$directory";else cd "$directory"
