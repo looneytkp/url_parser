@@ -329,8 +329,7 @@ case $1 in
 			mkdir "$directory" && cd "$directory";else cd "$directory"
 		fi
 		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
-		cp url_parser/install_parse.sh ~/Downloads
-		(cd ~/Downloads;bash ~/Downloads/install_parse.sh;rm ~/Downloads/install_parse.sh);;
+		bash url_parser/install_parse.sh;;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
