@@ -32,11 +32,16 @@ old(){
   - use pbcopy instead of xclip on mac.
   - reformat install_parse.sh & parse.sh.
   - fixed some URLs not copying to clipboard
-  - removed junk code.";}
-new(){
-	echo -e "\\n  v6.60
+  - removed junk code.\\n
+  v6.60
   - possible fix for sed causing errors.
   - option to enable or disable header(disabled by default).
+  - bug fixes & improvements.";}
+new(){
+	echo -e "\\n  v6.65
+  - added configuration to apply changes.
+  - option to auto update.
+  - option to add titles & header automatically.
   - bug fixes & improvements.\\n";}
 
 case "$l" in

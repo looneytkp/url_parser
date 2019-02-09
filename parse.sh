@@ -1,6 +1,6 @@
 #!/bin/bash
 #looneytkp
-version="v6.60"
+version="v6.65"
 set -e
 
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
@@ -39,8 +39,14 @@ update(){
 if [ ! -d $directory ]; then return;fi
 cd $directory;old_m=$(sed 's/-.*//' url_parser/.date);old_d=$(sed 's/.*-//' url_parser/.date)
 new_m=$(date +%m);new_d=$(date +%d);month=$(((new_m-old_m)*30));day=$((new_d-old_d+month))
-if [ $day -ge 3 ]; then read -n 1 -erp "check for updates ? Y/n : " c4u
-	if [ "$c4u" == y ]; then $0 -u;fi;date +%m-%d > url_parser/.date
+auto=$(grep "AUTOMATIC_UPDATE=" .conf|sed "s/AUTOMATIC_UPDATE=//")
+if [ $day -ge 3 ]; then
+	if [ "$auto" == NO ]; then
+		read -n 1 -erp "check for updates ? Y/n : " c4u
+		if [ "$c4u" == y ]; then $0 -u;fi;date +%m-%d > url_parser/.date
+	else
+		$0 -u;date +%m-%d > url_parser/.date
+	fi
 fi
 cd - > /dev/null
 }
@@ -174,26 +180,33 @@ edit(){
 		lru=$(echo "$url"|grep "http" || echo false)
 		if [ "$lru" == false ]; then echo -e "invalid: $url.";b=$((b-1));edit;fi
 	fi
-	printf %b "                   [Y/n]\\r"
-	read -n 1 -erp "add title?: " h
+	title=$(grep "AUTO_ADD_TITLE=" $directory/.conf|sed "s/AUTO_ADD_TITLE=//")
+	if [ "$title" == DEFAULT ];then printf %b "                   [Y/n]\\r"
+		read -n 1 -erp "add title?: " t
+	elif [ "$title" == YES ]; then
+		t=y
+	else
+		t=n
+	fi
+	header=$(grep "UNIVERSAL_HEADER=" $directory/.conf|sed "s/DEFAULT_HEADER=//")
 	if [ "$1" == '' ]; then
-		if ! grep 0 "$directory/url_parser/.conf"; then header top
-			if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
+		if [ "$header" == YES ]; then header top
+			if [ "$t" == y ]||[ "$t" == '' ]; then dl;title;PIO;else dl;PIO;fi
 			header
 		else
-			if [ "$h" == y ]||[ "$h" == '' ]; then dl;title;PIO;else dl;PIO;fi
+			if [ "$t" == y ]||[ "$t" == '' ]; then dl;title;PIO;else dl;PIO;fi
 		fi
 	else
 		dl
 		if ! grep -q "$pixel" $ct; then echo -e "$pixel: no such text.\\n";abort
 		else
-			if ! grep 0 "$directory/url_parser/.conf"; then header top
+			if [ "$header" == YES ]; then header top
 				PIO; mv $out $out2
-				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
+				if [ "$t" == y ]||[ "$t" == '' ]; then title; fi
 				grep -iwE "$1" $out2 >> $out; rm $out2;header
 			else
 				PIO; mv $out $out2
-				if [ "$h" == y ]||[ "$h" == '' ]; then title; fi
+				if [ "$t" == y ]||[ "$t" == '' ]; then title; fi
 				grep -iwE "$1" $out2 >> $out; rm $out2
 			fi
 		fi

@@ -1,7 +1,7 @@
 #!/bin/bash
 #looneytkp
 set -e
-version="v6.60"
+version="v6.65"
 
 connect(){
 	echo "no internet connection."
@@ -34,9 +34,14 @@ else
 	if [ -d url_parser ]; then cd url_parser; fi
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
+	auto=$(grep "AUTOMATIC_UPDATE=" .conf|sed "s/AUTOMATIC_UPDATE=//")
 	if [[ "$a" != "$b" ]]; then $name -c
-		printf %b "                 > to $name $version.\\r"
-		read -n 1 -erp "update? Y/n: " update
+		if [ "$auto" == NO ]; then
+			printf %b "                 > to $name $version.\\r"
+			read -n 1 -erp "update? Y/n: " update
+		else
+			update=y
+		fi
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
