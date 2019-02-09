@@ -9,6 +9,7 @@ flags:
       -i    -   install parse.
       -u    -   check for updates.
       -d    -   uninstall parse.
+      -e    -   edit configuration.
       -c    -   display current changelog.
       -C    -   display full changelog.
       -v    -   display parse version.

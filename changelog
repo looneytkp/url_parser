@@ -39,10 +39,8 @@ old(){
   - bug fixes & improvements.";}
 new(){
 	echo -e "\\n  v6.65
-  - added configuration to apply changes.
-  - option to auto update.
-  - option to add titles & header automatically.
-  - bug fixes & improvements.\\n";}
+  - added option to access configuration.
+  - major bug fixes & improvements.\\n";}
 
 case "$l" in
 	-C) printf %b "\\nchangelog:\\r";old && new;;

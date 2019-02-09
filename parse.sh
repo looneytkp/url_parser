@@ -314,6 +314,7 @@ case $1 in
 		else git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null
 			bash url_parser/install_parse.sh
 		fi;;
+	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 		elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
