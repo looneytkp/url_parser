@@ -10,8 +10,8 @@ connect(){
 }
 
 abort(){
-	if [ -d url_parser ];then
-		if [ ! -e url_parser/install_parse.sh ]; then
+	if [ -d "$directory"/url_parser ];then
+		if [ ! -e "$directory"/url_parser/install_parse.sh ]; then
 			rm -rf "$directory"
 		fi
 	else
