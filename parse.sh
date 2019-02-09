@@ -1,7 +1,7 @@
 #!/bin/bash
 #looneytkp
 version="v6.65"
-set -e
+set -xe
 
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>'
 ct=.ct;ct2=.ct2;out=.out;out2=.out2;name="parse";directory=~/.parseHub;arch=$(uname)
@@ -313,9 +313,9 @@ case $1 in
 			git pull -q 2> /dev/null||connect)
 			bash url_parser/install_parse.sh
 		else
-			printf "error: ";$0 -r
+			printf "error: ";$name -r
 		fi||
-		printf "error: ";$0 -r;exit;;
+		printf "error: ";$name -r;exit;;
 	-r)
 		r=$1;export r
 		echo "reinstalling $name..."
