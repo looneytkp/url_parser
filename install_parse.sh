@@ -17,6 +17,7 @@ abort(){
 	else
 		rm -rf "$directory"
 	fi
+	exit 0
 }
 
 run() {
@@ -31,7 +32,7 @@ if [[ ! -e $inst_dir ]]; then
 		echo -e "$name $version: installed."; $name -h
 	fi
 else
-	cd url_parser
+	cd "$directory"/url_parser
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
 	auto=$(grep "AUTOMATIC_UPDATE=" "$directory"/.conf|sed "s/AUTOMATIC_UPDATE=//")
