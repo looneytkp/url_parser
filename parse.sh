@@ -308,11 +308,11 @@ case $1 in
 	-u)
 		echo "checking for updates...";cd "$directory"
 		if [ -e url_parser ]; then
-			cd url_parser
-			git pull -q 2> /dev/null||connect
-			bash install_parse.sh
+			(cd url_parser
+			git pull -q 2> /dev/null||connect)
+			bash url_parser/install_parse.sh
 		else git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null
-			bash install_parse.sh
+			bash url_parser/install_parse.sh
 		fi;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
@@ -322,8 +322,8 @@ case $1 in
 		else echo "$name is not installed"
 		fi;;
 	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp. <https://github.com/looneytkp/url_parser>.";;
-	-c)	l=$1;export l;bash "$directory"/changelog;;
-	-C) l=$1;export l;bash "$directory"/changelog;;
+	-c)	l=$1;export l;bash "$directory"/url_parser/changelog;;
+	-C) l=$1;export l;bash "$directory"/url_parser/changelog;;
 	-h)	if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
 	*)	echo -e "invalid flag: $1."
 		if [ -d "$directory" ]; then cat "$directory"/.help;fi;;

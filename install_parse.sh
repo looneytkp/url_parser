@@ -31,10 +31,10 @@ if [[ ! -e $inst_dir ]]; then
 		echo -e "$name $version: installed."; $name -h
 	fi
 else
-	if [ -d url_parser ]; then cd url_parser; fi
+	cd url_parser
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
-	auto=$(grep "AUTOMATIC_UPDATE=" .conf|sed "s/AUTOMATIC_UPDATE=//")
+	auto=$(grep "AUTOMATIC_UPDATE=" "$directory"/.conf|sed "s/AUTOMATIC_UPDATE=//")
 	if [[ "$a" != "$b" ]]; then $name -c
 		if [ "$auto" == NO ]; then
 			printf %b "                 > to $name $version.\\r"
@@ -48,7 +48,7 @@ else
 				cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
 				cd - > /dev/null;date +%m-%d > .date
 				echo -e "$name & components updated.";exit 0;;
-			n) echo "$name: not updated.";date +%m-%d > .date;return;;
+			n|*) echo "$name: not updated.";cd - > /dev/null;date +%m-%d > .date;return;;
 		esac
 	else
 		x=$(cat install_parse.sh changelog .conf .help|md5sum)
@@ -87,13 +87,19 @@ if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 fi
 directory=~/.parseHub
-if [ ! -d $directory ]; then mkdir $directory;fi
-if [ "$PWD" != "$directory" ]; then cd $directory; fi
+if [ ! -d $directory ]; then
+	mkdir $directory
+	echo "installing..."
+	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+	cd url_parser
+	run && exit
+fi
+if [ "$PWD" != "$directory" ]; then cd $directory;fi
 if [ ! -d url_parser ]; then
 	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
-	run
+	run && exit
 elif [ -z "$(ls -A url_parser)" ]; then
 	rm -rf url_parser
 	echo "installing..."
