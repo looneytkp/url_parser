@@ -306,14 +306,19 @@ case $1 in
 			echo -e ":: no links added.";cleanup
 		fi;;
 	-u)
-		echo "checking for updates...";cd "$directory"
+		echo "checking for updates...";
+		cd "$directory" &&
 		if [ -e url_parser ]; then
 			(cd url_parser
 			git pull -q 2> /dev/null||connect)
 			bash url_parser/install_parse.sh
-		else git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null
-			bash url_parser/install_parse.sh
-		fi;;
+		else
+			echo "error: reinstalling $name."
+			git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+			cp url_parser/install_parse.sh ~/Downloads
+			(cd ~/Downloads;bash ~/Downloads/install_parse.shrm ~/Downloads/install_parse.sh)
+		fi||
+		echo "error: reinstall $name.";exit;;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name

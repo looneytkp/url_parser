@@ -22,8 +22,7 @@ abort(){
 
 run() {
 if [[ ! -e $inst_dir ]]; then
-	# if [ $? != 0 ]; then
-	if ! sudo cp "$_script" "$inst_dir" && sudo chmod 777 "$inst_dir"; then
+	if ! sudo cp -u "$_script" "$inst_dir" && sudo chmod 777 "$inst_dir"; then
 		rm -rf "$directory"
 		echo "$name not installed."
 	else
