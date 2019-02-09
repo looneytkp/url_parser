@@ -21,8 +21,8 @@ abort(){
 
 run() {
 if [[ ! -e $inst_dir ]]; then
-	sudo cp "$_script" "$inst_dir" && sudo chmod 777 "$inst_dir"
-	if [ $? != 0 ]; then
+	# if [ $? != 0 ]; then
+	if ! sudo cp "$_script" "$inst_dir" && sudo chmod 777 "$inst_dir"; then
 		rm -rf "$directory"
 		echo "$name not installed."
 	else
@@ -45,16 +45,16 @@ else
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
-				cp -u {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
+				cp -u {parse.sh,install_parse.sh,changelog,.help} "$directory"
 				cd - > /dev/null;date +%m-%d > .date
 				echo -e "$name & components updated.";exit 0;;
 			n|*) echo "$name: not updated.";cd - > /dev/null;date +%m-%d > .date;return;;
 		esac
 	else
-		x=$(cat install_parse.sh changelog .conf .help|md5sum)
-		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.conf "$directory"/.help|md5sum)
+		x=$(cat install_parse.sh changelog .help|md5sum)
+		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.help|md5sum)
 		if [ "$x" != "$y" ];then
-			cp -u {install_parse.sh,changelog,.conf,.date,.help} "$directory"
+			cp -u {install_parse.sh,changelog,.help} "$directory"
 			echo -e "components updated.\\n$name: up-to-date -- $version."
 		else
 			echo -e "$name: up-to-date -- $version."
@@ -88,7 +88,7 @@ elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 fi
 directory=~/.parseHub
 if [ ! -d $directory ]; then
-	mkdir $directory
+	mkdir $directory;cd $directory
 	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
