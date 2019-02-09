@@ -40,6 +40,7 @@ old(){
 new(){
 	echo -e "\\n  v6.65
   - added access to edit configuration.
+  - added reinstall flag -- '-r'.
   - major bug fixes & improvements.\\n";}
 
 case "$l" in
