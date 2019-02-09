@@ -317,7 +317,7 @@ case $1 in
 		else cd "$directory"
 			if [ -e url_parser ];then
 				(cd url_parser
-				git pull -q 2> /dev/null||connect)
+				git pull -q 2> /dev/null||connect_)
 				bash url_parser/install_parse.sh
 			else
 				printf "error: ";$name -r
@@ -329,7 +329,7 @@ case $1 in
 		if [ ! -d "$directory" ];then
 			mkdir "$directory" && cd "$directory";else cd "$directory"
 		fi
-		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect_
 		bash url_parser/install_parse.sh;;
 	-e) nano "$directory"/.conf;;
 	-d)
