@@ -63,6 +63,12 @@ PIO(){
 	parser
 }
 
+connect_(){
+	echo "no internet connection."
+	if [ -z "$(ls -A "$directory")" ]; then rm -rf "$directory";fi
+	exit
+}
+
 connect(){
 	wget -q --spider google.com && exitStatus=$?||exitStatus=4
 	if [ $exitStatus == 0 ]; then
@@ -319,6 +325,9 @@ case $1 in
 	-r)
 		r=$1;export r
 		echo "reinstalling $name..."
+		if [ ! -d "$directory" ];then
+			mkdir "$directory" && cd "$directory";else cd "$directory"
+		fi
 		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 		cp url_parser/install_parse.sh ~/Downloads
 		(cd ~/Downloads;bash ~/Downloads/install_parse.sh;rm ~/Downloads/install_parse.sh);;
