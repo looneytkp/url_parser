@@ -329,7 +329,7 @@ case $1 in
 		if [ ! -d "$directory" ];then
 			mkdir "$directory" && cd "$directory";else cd "$directory"
 		fi
-		rm url_parser
+		rm -rf url_parser
 		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect_
 		bash url_parser/install_parse.sh;;
 	-e) nano "$directory"/.conf;;
