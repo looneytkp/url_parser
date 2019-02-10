@@ -1,12 +1,12 @@
 #!/bin/bash
 #looneytkp
-set -x
+set -e
 version="v6.65"
 
 connect(){
 	echo "no internet connection."
 	if [ -z "$(ls -A "$directory")" ]; then rm -rf "$directory";fi
-	exit
+	return 1
 }
 
 abort(){
@@ -31,7 +31,6 @@ if [[ ! -e $inst_dir ]]; then
 		echo -e "$name $version: installed."; $name -h
 	fi
 else
-	cd "$directory"/url_parser
 	a=$(md5sum "$_script"|sed "s:  .*$name.sh::")
 	b=$(md5sum "$inst_dir"|sed "s:  $inst_dir::")
 	auto=$(grep "AUTOMATIC_UPDATE=" "$directory"/.conf|sed "s/AUTOMATIC_UPDATE=//")
@@ -59,7 +58,7 @@ else
 		else
 			echo -e "$name: up-to-date -- $version."
 		fi
-		date +%m-%d > .date
+		cd - > /dev/null;date +%m-%d > .date
 	fi
 fi
 }
@@ -80,7 +79,7 @@ elif [ "$arch" == Linux ]; then
 	elif [ ! -e /usr/bin/wget ]; then echo -e "install wget.";exit 0
 	elif [ ! -e /usr/bin/git ]; then echo "install git.";exit 0
 	fi
-fi	
+fi
 name="parse";_script=$name.sh
 arch=$(uname)
 if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
@@ -95,6 +94,11 @@ if [ ! -d $directory ]; then
 	run && exit
 fi
 if [ "$PWD" != "$directory" ]; then cd $directory;fi
+
+if [ -e $inst_dir ]&&[ -d "$directory" ]&&[ -d "$directory"/url_parser ];then
+	if [ "$0" != "$directory"/url_parser/install_parse.sh ]; then exit 0;fi
+fi
+
 if [ ! -d url_parser ]; then
 	if [ "$r" == -r ]; then echo "installing...";fi
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
@@ -107,5 +111,7 @@ elif [ -z "$(ls -A url_parser)" ]; then
 	cd url_parser
 	run
 else
+	cd url_parser
 	run
 fi
+#end of script
