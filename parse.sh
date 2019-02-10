@@ -66,7 +66,7 @@ PIO(){
 connect_(){
 	echo "no internet connection."
 	if [ -z "$(ls -A "$directory")" ]; then rm -rf "$directory";fi
-	exit
+	return 1
 }
 
 connect(){
