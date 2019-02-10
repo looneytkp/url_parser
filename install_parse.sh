@@ -46,8 +46,8 @@ else
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
 				cp -u {parse.sh,install_parse.sh,changelog,.help} "$directory"
 				cd - > /dev/null;date +%m-%d > .date
-				echo -e "$name & components updated.";exit 0;;
-			n|*) echo "$name: not updated.";cd - > /dev/null;date +%m-%d > .date;return;;
+				echo -e "$name & components updated.";return 5;;
+			n|*) echo "$name: not updated.";cd - > /dev/null;date +%m-%d > .date;return 5;;
 		esac
 	else
 		x=$(cat install_parse.sh changelog .help|md5sum)

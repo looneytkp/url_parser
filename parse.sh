@@ -328,7 +328,6 @@ case $1 in
 #		r=$1;export r
 #		echo "reinstalling $name..."
 #		if [ -d "$directory" ];then rm -rf "$directory";fi
-#		
 #			mkdir "$directory" && cd "$directory";else cd "$directory"
 #		fi
 #		sudo rm -rf url_parser "$inst_dir"
