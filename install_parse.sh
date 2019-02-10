@@ -96,7 +96,7 @@ fi
 if [ "$PWD" != "$directory" ]; then cd $directory;fi
 
 if [ -e $inst_dir ]&&[ -d "$directory" ]&&[ -d "$directory"/url_parser ];then
-	if [ "$0" != "$directory"/url_parser/install_parse.sh ]; then exit 0;fi
+	if [ "$0" != url_parser/install_parse.sh ]; then exit 0;fi
 fi
 
 if [ ! -d url_parser ]; then
