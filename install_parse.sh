@@ -54,7 +54,7 @@ else
 		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.help|md5sum)
 		if [ "$x" != "$y" ];then
 			cp -u {install_parse.sh,changelog,.help} "$directory"
-			echo -e "components updated.\\n$name: up-to-date -- $version.";exit 0
+			echo -e "components updated.\\n$name: up-to-date -- $version.";return 5
 		else
 			echo -e "$name: up-to-date -- $version."
 		fi
