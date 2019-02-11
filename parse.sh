@@ -324,15 +324,7 @@ case $1 in
 			fi
 		fi;;
 	-r)
-		echo "currently not working."; exit 0;;
-#		r=$1;export r
-#		echo "reinstalling $name..."
-#		if [ -d "$directory" ];then rm -rf "$directory";fi
-#			mkdir "$directory" && cd "$directory";else cd "$directory"
-#		fi
-#		sudo rm -rf url_parser "$inst_dir"
-#		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect_
-#		bash url_parser/install_parse.sh -r;;
+		bash url_parser/install_parse.sh -r;;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
