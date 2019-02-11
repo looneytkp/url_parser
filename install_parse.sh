@@ -99,17 +99,22 @@ if [ -e $inst_dir ]&&[ -d "$directory" ]&&[ -d "$directory"/url_parser ];then
 	if [ "$0" != url_parser/install_parse.sh ]; then exit 0;fi
 fi
 
-if [ ! -d url_parser ]; then
-	if [ "$r" == -r ]; then echo "installing...";fi
+if [ ! -d url_parser ];then
+	echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run && exit
-elif [ -z "$(ls -A url_parser)" ]; then
-	rm -rf url_parser
-	if [ "$r" == -r ];then echo "installing...";fi
+elif [ -z "$(ls -A url_parser)" ];then
+	rm -rf url_parser;echo "installing..."
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run
+elif [ "$1" == -r ];then
+	echo "reinstalling $name..."
+	if [ -d "$directory" ];then sudo rm -rf "$directory" $inst_dir;else sudo rm $inst_dir;fi
+	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+	bash url_parser/install_parse.sh -r
+	exit
 else
 	cd url_parser
 	run

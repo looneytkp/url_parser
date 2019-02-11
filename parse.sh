@@ -332,7 +332,7 @@ case $1 in
 #		fi
 #		sudo rm -rf url_parser "$inst_dir"
 #		git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect_
-#		bash url_parser/install_parse.sh;;
+#		bash url_parser/install_parse.sh -r;;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
