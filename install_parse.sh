@@ -67,7 +67,7 @@ trap abort SIGINT
 if [ "$arch" == Darwin ]; then
 	if [ ! -e /usr/bin/pbcopy ]; then echo -e "install pbcopy.";exit 0
 	elif [ ! -e /usr/local/bin/wget ]; then echo "install wget.";exit 0
-	elif [ ! -e /usr/local/bin/git ]; then printf "git is not installed."
+	elif [ ! -e /usr/local/git ]||[ ! -e /usr/bin/git ]; then printf "git is not installed."
 		read -erp " install git ? Y/n: " gitInst
 		case $gitInst in
 			Y|y|'') git --version;;
