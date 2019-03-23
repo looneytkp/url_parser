@@ -323,8 +323,8 @@ case $1 in
 				printf "error: ";$name -r
 			fi
 		fi;;
-	-r)
-		bash url_parser/install_parse.sh -r;;
+	-r)	echo "not working yet"
+		#bash url_parser/install_parse.sh -r;;
 	-e) nano "$directory"/.conf;;
 	-d)
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name

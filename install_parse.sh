@@ -109,12 +109,12 @@ elif [ -z "$(ls -A url_parser)" ];then
 	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
 	cd url_parser
 	run
-elif [ "$1" == -r ];then
-	echo "reinstalling $name..."
-	if [ -d "$directory" ];then sudo rm -rf "$directory" $inst_dir;else sudo rm $inst_dir;fi
-	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
-	bash url_parser/install_parse.sh -r
-	exit
+#elif [ "$1" == -r ];then
+#	echo "reinstalling $name..."
+#	if [ -d "$directory" ];then sudo rm -rf "$directory" $inst_dir;else sudo rm $inst_dir;fi
+#	git clone -q https://github.com/looneytkp/url_parser.git 2> /dev/null||connect
+#	bash url_parser/install_parse.sh -r
+#	exit
 else
 	cd url_parser
 	run
