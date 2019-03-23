@@ -323,7 +323,7 @@ case $1 in
 				printf "error: ";$name -r
 			fi
 		fi;;
-	-r)	echo "not working yet"
+	-r)	echo "not working yet";;
 		#bash url_parser/install_parse.sh -r;;
 	-e) nano "$directory"/.conf;;
 	-d)
