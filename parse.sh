@@ -92,6 +92,7 @@ connect(){
 }
 
 dl(){
+	#axel and aria2
 	wget -k "$url" -o .wget -O $ct||connect
 	if ! grep -qE "$format" $ct; then
 		if [ "$nd2" != '' ];then echo -e ":: error: $url\\n" else echo -e "error: $url\\n";fi
@@ -184,9 +185,11 @@ edit(){
 		abort
 	else
 		lru=$(echo "$url"|grep "http" || echo false)
-		if [ "$lru" == false ]; then echo -e "invalid: $url.";b=$((b-1));edit;fi
+		if [ "$lru" == false ]; then echo -e "error: $url.";b=$((b-1));edit;fi
 	fi
-	title=$(grep "AUTO_ADD_TITLE=" $directory/.conf|sed "s/AUTO_ADD_TITLE=//")
+	if [ ! -e $directory/.conf ]; then title='DEFAULT'
+	else title=$(grep "AUTO_ADD_TITLE=" $directory/.conf|sed "s/AUTO_ADD_TITLE=//")
+	fi
 	if [ "$title" == DEFAULT ];then printf %b "                   [Y/n]\\r"
 		read -n 1 -erp "add title?: " t
 	elif [ "$title" == YES ]; then
@@ -194,7 +197,9 @@ edit(){
 	else
 		t=n
 	fi
-	header=$(grep "UNIVERSAL_HEADER=" $directory/.conf|sed "s/DEFAULT_HEADER=//")
+	if [ ! -e $directory/.conf ]; then header='NO'
+	else header=$(grep "UNIVERSAL_HEADER=" $directory/.conf|sed "s/DEFAULT_HEADER=//")
+	fi
 	if [ "$1" == '' ]; then
 		if [ "$header" == YES ]; then header top
 			if [ "$t" == y ]||[ "$t" == '' ]; then dl;title;PIO;else dl;PIO;fi
@@ -266,7 +271,7 @@ sort(){
 				*)
 					lru=$(echo "$url"|grep "http"|| echo false)
 					if [ "$lru" == false ]; then
-						echo ":: error: $url not a URL."
+						echo -e "\\n:: error: $url\\n"
 							echo > $out;size=$(wc -l<$out);abort
 					else
 						dl;title;PIO;rm $ct
@@ -312,21 +317,25 @@ case $1 in
 			echo -e ":: no links added.";cleanup
 		fi;;
 	-u)
-		echo "checking for updates...";
-		if [ ! -e "$directory" ];then printf "error: ";$name -r
-		else cd "$directory"
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: updates disabled.";exit
+		else
+			echo "checking for updates...";
+			cd "$directory"
 			if [ -e url_parser ];then
 				(cd url_parser
 				git pull -q 2> /dev/null||connect_)
 				bash url_parser/install_parse.sh
 			else
-				printf "error: ";$name -r
+				printf "error: reinstall $name."
 			fi
 		fi;;
-	-r)	echo "not working yet";;
+	-r)	echo ":: not working yet.";;
 		#bash url_parser/install_parse.sh -r;;
-	-e) nano "$directory"/.conf;;
+	-e) 
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: configuration unavailable."
+		else nano "$directory"/.conf;fi;;
 	-d)
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: uninstall unavailable.";exit;fi
 		if [ "$arch" = Linux ]; then inst_dir=/usr/bin/$name
 		elif [ "$arch" = Darwin ]; then inst_dir=/usr/local/bin/$name
 		fi
@@ -334,9 +343,15 @@ case $1 in
 		else echo "$name is not installed"
 		fi;;
 	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp. <https://github.com/looneytkp/url_parser>.";;
-	-c)	l=$1;export l;bash "$directory"/url_parser/changelog;;
-	-C) l=$1;export l;bash "$directory"/url_parser/changelog;;
-	-h)	if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
+	-c)	
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: changelog unavailable.";exit;fi
+		l=$1;export l;bash "$directory"/url_parser/changelog;;
+	-C) 
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: changelog unavailable.";exit;fi
+		l=$1;export l;bash "$directory"/url_parser/changelog;;
+	-h)	
+		if [ ! -e "$directory" ];then echo -e ":: standalone script: help info unavailable.";exit;fi
+		if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
 	*)	echo -e "invalid flag: $1."
 		if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
 esac
