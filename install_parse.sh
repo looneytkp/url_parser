@@ -26,7 +26,7 @@ if [[ ! -e $inst_dir ]]; then
 		rm -rf "$directory"
 		echo "$name not installed."
 	else
-		cp {changelog,.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
+		cp {.conf,.date,.help,install_parse.sh,parse.sh} "$directory"
 		cd - > /dev/null;date +%m-%d > .date
 		echo -e "$name $version: installed."; $name -h
 	fi
@@ -44,16 +44,16 @@ else
 		case $update in
 			Y|y|'')
 				sudo cp -u "$_script" "$inst_dir";sudo chmod 777 "$inst_dir"
-				cp -u {parse.sh,install_parse.sh,changelog,.help} "$directory"
+				cp -u {parse.sh,install_parse.sh,.help} "$directory"
 				cd - > /dev/null;date +%m-%d > .date
 				echo -e "$name & components updated.";return 5;;
 			n|*) echo "$name: not updated.";cd - > /dev/null;date +%m-%d > .date;return 5;;
 		esac
 	else
-		x=$(cat install_parse.sh changelog .help|md5sum)
-		y=$(cat "$directory"/install_parse.sh "$directory"/changelog "$directory"/.help|md5sum)
+		x=$(cat install_parse.sh .help|md5sum)
+		y=$(cat "$directory"/install_parse.sh "$directory"/.help|md5sum)
 		if [ "$x" != "$y" ];then
-			cp -u {install_parse.sh,changelog,.help} "$directory"
+			cp -u {install_parse.sh,.help} "$directory"
 			echo -e "components updated.\\n$name: up-to-date -- $version.";return 5
 		else
 			echo -e "$name: up-to-date -- $version."
@@ -96,7 +96,7 @@ fi
 if [ "$PWD" != "$directory" ]; then cd $directory;fi
 
 if [ -e $inst_dir ]&&[ -d "$directory" ]&&[ -d "$directory"/url_parser ];then
-	if [ "$0" != url_parser/install_parse.sh ]; then exit 0;fi
+	if [ "$0" != url_parser/install_parse.sh ]; then echo "already installed.";exit 0;fi
 fi
 
 if [ ! -d url_parser ];then

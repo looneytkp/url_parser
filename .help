@@ -9,10 +9,8 @@ flags:
       -i    -   install parse.
       -u    -   check for updates.
       -d    -   uninstall parse.
-      -r    -   reinstall parse.
+      -r    -   resize images.
       -e    -   edit configuration.
-      -c    -   display current changelog.
-      -C    -   display full changelog.
       -v    -   display parse version.
       -h    -   display help or info.
 
