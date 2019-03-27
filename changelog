@@ -36,7 +36,12 @@ old(){
   v6.60
   - possible fix for sed causing errors.
   - option to enable or disable header(disabled by default).
-  - bug fixes & improvements.";}
+  - bug fixes & improvements."\\n
+  v6.65
+  - added access to edit configuration.
+  - added reinstall flag -- '-r'.
+  - major bug fixes & improvements.\\n"
+  }
 new(){
 	echo -e "\\n  v6.65
   - added access to edit configuration.

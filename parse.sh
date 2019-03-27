@@ -30,7 +30,7 @@ title(){
 	{ if grep -qioE "s[0-9][0-9]" $ct; then
 			_a=$(grep -ioE "s[0-9][0-9]" $ct|head -1|
 			sed -e "s/[S-s]/<h3>Season /" -e 's/$/<\/h3>/')
-			echo "$_a"
+			echo -e "$_a"
 	  fi
 	} >> $out
 }
@@ -115,21 +115,79 @@ final(){
 				if grep -qE "(x264|x265)" $ct2; then
 					perg(){ 
 						size=$(wc -l<.ct3)
-						if [ "$size" -ge 1 ]; then echo >> $out;cat .ct3 >> $out;fi;rm .ct3
+						if [ "$size" -ge 1 ]; then
+							{
+								echo -e "\\n$f\\n"; cat .ct3
+							} >> $out
+						fi
+						rm .ct3
 					}
 					grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
 				else
-					echo >> $out;grep -E "$f" $ct2 >> $out
+					{
+						echo -e "\\n$f\\n"; grep -E "$f" $ct2
+					} >> $out
 				fi
+				#get x264 only
 				if grep -qioE "$f.*x264" $ct2; then
-					echo >> $out;grep -oiE ".*$f.*x264" $ct2 >> $out
+					{
+						echo -e "\\n$f x264\\n"; grep -oiE ".*$f.*x264" $ct2
+					} >> $out
 				fi
+				#get x265 only
 				if grep -qioE "$f.*x265" $ct2; then
-					echo >> $out;grep -oiE ".*$f.*x265" $ct2 >> $out
+					{
+						echo -e "\\n$f x265\\n"; grep -oiE ".*$f.*x265" $ct2
+					} >> $out 
 				fi
 			fi
 		done
 	fi
+}
+
+resize(){
+	file=.resizer.txt
+	if [ ! -d resized ]; then mkdir resized;fi
+	if [[ -e $file ]]; then rm $file;fi
+	find *.jpg *.png *.jpeg 2> /dev/null|grep -vE '(_c.jpg|_c.png|_c.jpeg)'|grep -n . > $file|| printf "\\r:: no images to convert\\n"
+	cnt=1; mul=0; numberOfImgs=$(wc -l .resizer.txt|sed "s/ .resizer.txt//"); z=0
+	while true;do
+		if grep -q "$cnt:" $file; then
+			printf %b ":: resizing $numberOfImgs images to 500x741: $mul%\\r"
+			name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//")
+			proc=$(grep "$name" $file|grep -oE '(.jpg|.png|.jpeg)')
+			size=$(identify -verbose "$name" 2>> .logs|grep Geometry|sed -e 's/.*: //' -e 's/+.*//' -e 's/x//')
+			if [[ $proc == '.jpg' ]];then
+				old='.jpg';new='_c.jpg'
+			elif [[ $proc == '.png' ]]; then
+				old='.png';new='_c.png'
+			elif [[ $proc == '.jpeg' ]]; then
+				old='.jpeg';new='_c.jpeg'
+			fi
+			new_name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//"|sed "s/$old/$new/")
+			if [[ $size -lt 500741 ]]; then
+				echo "$name is less than 500x741" >> .logs
+			elif [[ $size -gt 500741 ]]; then
+				convert "$name" -resize 500x741! -quality 55 resized/"$new_name" 2>> .logs
+				mv "$name" ~/.local/share/Trash/files
+			elif [[ $size == 500741 ]]; then
+				convert "$name" -quality 55 resized/"$new_name" 2>> .logs
+				mv "$name" ~/.local/share/Trash/files
+			fi
+			div=$(((100+(numberOfImgs-1))/numberOfImgs)); mod=$((100%div)); cnt=$((cnt+1)); z=$((z+1));
+			if [ $mod == 0 ]; then mul=$((div*z)); fi
+			if [ $z == $numberOfImgs ]; then
+				mul=$((mul+mod))
+				echo ":: resizing $numberOfImgs images to 500x741: $mul%"
+				echo ":: saved to resized directory."
+				break
+			fi
+			if [ $mod != 0 ]; then mul=$((div*z)); fi
+		else
+			break
+		fi
+	done
+	rm $file
 }
 
 parser(){
@@ -144,23 +202,33 @@ parser(){
 				if grep -qE "(x264|x265)" $ct2; then
 					perg(){ 
 						size=$(wc -l<.ct3)
-						if [ "$size" -ge 1 ]; then echo -e "\\n$f" >> $out;cat .ct3 >> $out;fi
+						if [ "$size" -ge 1 ]; then
+							{
+								cat .ct3
+							} >> $out
+						fi
 						rm .ct3
 						}
 					grep -vE "$f.*(x264|x265)" $ct2 >> .ct3 && perg || true
 				else
 					size=$(wc -l<$ct2)
 					if [ "$size" -ge 1 ]; then
-						echo -e "\\n$f" >> $out;grep -owE "($f|$format)" $ct2 >> $out
+						{
+							grep -owE "($f|$format)" $ct2
+						} >> $out
 					fi
 				fi
 				#get x264 only
 				if grep -qioE "$f.*x264" $ct2; then
-					echo -e "\\n$f x264" >> $out;grep -oiE ".*$f.*x264" $ct2 >> $out
+					{
+						grep -oiE ".*$f.*x264" $ct2
+					} >> $out
 				fi
 				#get x265 only
 				if grep -qioE "$f.*x265" $ct2; then
-					echo -e "\\n$f x265" >> $out;grep -oiE ".*$f.*x265" $ct2 >> $out
+					{
+						grep -oiE ".*$f.*x265" $ct2
+					} >> $out
 				fi
 			fi
 		done
@@ -170,7 +238,7 @@ parser(){
 
 header(){
 	if [ "$1" == top ]; then
-		echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n\\n>>>  paste movie description here  <<<\\n" > $out
+		echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n\\n>>>  paste movie description here  <<<" > $out
 	else
 		echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out
 	fi
@@ -291,7 +359,7 @@ case $1 in
 	-p)
 		touch $out
 		if [ "$2" != '' ]; then
-			escape=no;nd2="$2";n=$#;n=$((n-1));n1=$n;mul=0;z=0
+			escape=no;nd2="$2";n=$(($#-1));mul=0;z=0
 			echo
 			for position;do
 				if [ "$position" == -p ]; then
@@ -306,10 +374,13 @@ case $1 in
 						echo -e ":: $fb: $url.\\n";abort
 					fi
 				fi
-			div=$((100/n1));mod=$((100%div));z=$((z+1));mul=$((div*z))
-			if [ $z == $n1 ]; then 
+			div=$(((100+(n-1))/n)); z=$((z+1));
+			mod=$((100%div))
+			if [ $mod == 0 ]; then mul=$((div*z)); fi
+			if [ $z == $n ]; then
 				mul=$((mul+mod));echo ":: auto parsing $n URL(s): $mul%";break
-			fi				
+			fi
+			if [ $mod != 0 ]; then mul=$((div*z)); fi
 			done
 			escape=yes; printf %b ":: assembling...\\r";sleep 1
 			'sort' "$n";if [ "$1" != -u ]||[ "$1" != -d ]; then update;fi;abort
@@ -329,8 +400,16 @@ case $1 in
 				printf "error: reinstall $name."
 			fi
 		fi;;
-	-r)	echo ":: not working yet.";;
-		#bash url_parser/install_parse.sh -r;;
+	-r)	
+		resize
+		if [ -e .logs ]; then
+			size=$(wc -l .logs|sed "s/ .logs//")
+			if [ $size != 0 ]; then
+				echo -e "\\nerrors:"
+				cat .logs|grep -n .|sed 's/:/: /'
+			fi
+			rm .logs
+		fi;;
 	-e) 
 		if [ ! -e "$directory" ];then echo -e ":: standalone script: configuration unavailable."
 		else nano "$directory"/.conf;fi;;
@@ -343,12 +422,6 @@ case $1 in
 		else echo "$name is not installed"
 		fi;;
 	-v) echo -e "$name $version.\\nThis is free software: you are free to change and redistribute it.\\nWritten by looneytkp. <https://github.com/looneytkp/url_parser>.";;
-	-c)	
-		if [ ! -e "$directory" ];then echo -e ":: standalone script: changelog unavailable.";exit;fi
-		l=$1;export l;bash "$directory"/url_parser/changelog;;
-	-C) 
-		if [ ! -e "$directory" ];then echo -e ":: standalone script: changelog unavailable.";exit;fi
-		l=$1;export l;bash "$directory"/url_parser/changelog;;
 	-h)	
 		if [ ! -e "$directory" ];then echo -e ":: standalone script: help info unavailable.";exit;fi
 		if [ -d "$directory" ]; then cat "$directory"/.help;fi;;
