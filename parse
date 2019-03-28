@@ -52,13 +52,24 @@ cd - > /dev/null
 }
 
 PIO(){
-	c=1
-	while true; do if [ $c -gt 9 ]; then d="(e$c|e$c)";else d="(e$c|e0$c)";fi
-		if grep -qiwE ".*$d" $ct; then grep -iwE ".*$d" $ct >> $ct2
+	c=1; #touch $ct2
+	while true; do
+		if [ $c -gt 9 ]; then
+			d="(e$c|e$c|-$c)"
 		else
-			if [ -e $ct2 ]; then mv $ct2 $ct;fi;break
+			d="(e$c|e0$c|-0$c)"
 		fi
-		c=$((c+1))
+		if grep -qiwE ".*$d" $ct; then
+			#if ! grep -qiwE ".*$d" $ct2; then
+				grep -iwE ".*$d" $ct >> $ct2
+				c=$((c+1))
+			#else
+			#	c=$((c+1))
+			#fi
+		else
+			if [ -e $ct2 ]; then mv $ct2 $ct;fi
+			break
+		fi
 	done
 	parser
 }
@@ -73,9 +84,9 @@ connect(){
 	wget -q --spider google.com && exitStatus=$?||exitStatus=4
 	if [ $exitStatus == 0 ]; then
 		if [ "$nd2" != '' ];then
-			if grep -q "404" .wget;then echo ":: error 404: not found."
-			elif grep -q "Name orservice not known" .wget;then
-				echo ":: service unknown: '$url'"
+			if grep -q "404" .wget;then echo -e "\\n:: error 404: not found.\\n"
+			elif grep -q "Name or service not known" .wget;then
+				echo -e "\\n:: service unknown: '$url'\\n"
 			fi
 		else
 			if grep -q "404" .wget; then echo "error 404: not found."
@@ -84,7 +95,7 @@ connect(){
 			fi
 		fi
 	else
-		if [ "$nd2" != '' ]; then echo ":: no internet connection."
+		if [ "$nd2" != '' ]; then echo -e "\\n:: no internet connection.\\n"
 		else echo "no internet connection."
 		fi
 	fi
