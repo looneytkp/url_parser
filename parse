@@ -109,9 +109,11 @@ dl(){
 		if [ "$nd2" != '' ];then echo -e ":: error: $url\\n" else echo -e "error: $url\\n";fi
 		abort
 	fi
-	if grep -iqE '(&amp|&darr)' $ct; then grep -vE '.*(amp|darr).*' $ct > $ct2;mv $ct2 $ct;fi
+	if grep -qiqE '(&amp|&darr)' $ct; then grep -vE '.*(amp|darr).*' $ct > $ct2;mv $ct2 $ct;fi
 	if grep -qioE "trailer" $ct; then echo 'Trailer' >> $out
-		grep -iwE ".*trailer.*</a>" $ct|sed 's:.*<a:<a:';echo >> $out
+		{
+			grep -iwE ".*trailer.*</a>" $ct|sed 's:.*<a:<a:';echo
+		} >> $out
 	fi
 }
 
@@ -122,6 +124,7 @@ final(){
 	else
 		f=(480p 720p 1080p)
 		for f in "${f[@]}"; do
+			#get 480p, 720p & 1080p only
 			if grep -qioE "$f" "$file"; then grep -E "$f" "$file" > $ct2
 				if grep -qE "(x264|x265)" $ct2; then
 					perg(){ 
@@ -158,7 +161,8 @@ final(){
 
 resize(){
 	file=.resizer.txt
-	if [ ! -d resized ]; then mkdir resized;fi
+	if [ ! -d resized_images ]; then mkdir resized_images;fi
+	if [ ! -d original_images ]; then mkdir original_images;fi
 	if [[ -e $file ]]; then rm $file;fi
 	find *.jpg *.png *.jpeg 2> /dev/null|grep -vE '(_c.jpg|_c.png|_c.jpeg)'|grep -n . > $file|| printf "\\r:: no images to convert\\n"
 	cnt=1; mul=0; numberOfImgs=$(wc -l .resizer.txt|sed "s/ .resizer.txt//"); z=0
@@ -167,7 +171,10 @@ resize(){
 			printf %b ":: resizing $numberOfImgs images to 500x741: $mul%\\r"
 			name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//")
 			proc=$(grep "$name" $file|grep -oE '(.jpg|.png|.jpeg)')
-			size=$(identify -verbose "$name" 2>> .logs|grep Geometry|sed -e 's/.*: //' -e 's/+.*//' -e 's/x//')
+			identify=$(identify -verbose "$name" 2>> .logs|grep Geometry|sed -e 's/.*: //' -e 's/+.*//' -e 's/x//')
+			geometry=$(echo $identify|sed 's/x//')
+			width=$(echo $identify|sed 's/x.*//')
+			height=$(echo $identify|sed 's/.*x//')
 			if [[ $proc == '.jpg' ]];then
 				old='.jpg';new='_c.jpg'
 			elif [[ $proc == '.png' ]]; then
@@ -176,14 +183,14 @@ resize(){
 				old='.jpeg';new='_c.jpeg'
 			fi
 			new_name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//"|sed "s/$old/$new/")
-			if [[ $size -lt 500741 ]]; then
+			if [[ $geometry -lt 500741 ]]; then
 				echo "$name is less than 500x741" >> .logs
-			elif [[ $size -gt 500741 ]]; then
-				convert "$name" -resize 500x741! -quality 55 resized/"$new_name" 2>> .logs
-				mv "$name" ~/.local/share/Trash/files
-			elif [[ $size == 500741 ]]; then
-				convert "$name" -quality 55 resized/"$new_name" 2>> .logs
-				mv "$name" ~/.local/share/Trash/files
+			elif [[ $geometry -gt 500741 ]]; then
+				convert "$name" -resize 500x741! -quality 55 resized_images/"$new_name" 2>> .logs
+				mv "$name" original_images/		#~/.local/share/Trash/files
+			elif [[ $geometry == 500741 ]]; then
+				convert "$name" -quality 55 resized_images/"$new_name" 2>> .logs
+				mv "$name" original_images/		#~/.local/share/Trash/files
 			fi
 			div=$(((100+(numberOfImgs-1))/numberOfImgs)); mod=$((100%div)); cnt=$((cnt+1)); z=$((z+1));
 			if [ $mod == 0 ]; then mul=$((div*z)); fi
@@ -206,6 +213,7 @@ parser(){
 		echo >> $out
 		grep -iowE "$format" $ct|sed 's:.*<a:<a:' >> $out
 	else
+		#get 480p, 720p & 1080p only
 		f=(480p 720p 1080p)
 		for f in "${f[@]}"; do
 			if grep -qioE "$f.*$format" $ct; then
