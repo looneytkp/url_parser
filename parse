@@ -170,16 +170,16 @@ resize(){
 		if grep -q "$cnt:" $file; then
 			printf %b ":: resizing $numberOfImgs images to 500x741: $mul%\\r"
 			name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//")
-			proc=$(grep "$name" $file|grep -oE '(.jpg|.png|.jpeg)')
+			extension=$(grep "$name" $file|grep -oE '(.jpg|.png|.jpeg)')
 			identify=$(identify -verbose "$name" 2>> .logs|grep Geometry|sed -e 's/.*: //' -e 's/+.*//' -e 's/x//')
 			geometry=$(echo $identify|sed 's/x//')
 			width=$(echo $identify|sed 's/x.*//')
 			height=$(echo $identify|sed 's/.*x//')
-			if [[ $proc == '.jpg' ]];then
+			if [[ $extension == '.jpg' ]];then
 				old='.jpg';new='_c.jpg'
-			elif [[ $proc == '.png' ]]; then
+			elif [[ $extension == '.png' ]]; then
 				old='.png';new='_c.png'
-			elif [[ $proc == '.jpeg' ]]; then
+			elif [[ $extension == '.jpeg' ]]; then
 				old='.jpeg';new='_c.jpeg'
 			fi
 			new_name=$(grep -w "$cnt:.*" $file|sed "s/"$cnt:"//"|sed "s/$old/$new/")
