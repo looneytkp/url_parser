@@ -27,18 +27,21 @@ install
 format='.*(webrip|avi|flv|wmv|mov|mp4|mkv|3gp|webm|m4a|m4v|f4a|f4v|m4b|m4r|f4b).*</a>' # format #
 tmp_directory="$PWD/.temp"; PIO_directory="$PWD/.PIO"; summary_directory="$PWD/.finished" # directories #
 ct="$tmp_directory/xy"; ct2="$tmp_directory/yx"; out=.parsed # files #
+sig_abort(){
+	cleanup && echo -e "\\naborted.\\n" && exit 0
+}
 cleanup(){
 	# clean up residues before and after execution #
 	if [ -e "$tmp_directory"/err ]; then echo -e "\\nlogs:"; cat -n "$tmp_directory"/err && echo; fi # print logs if found #
 	rm -rf "$tmp_directory" "$PIO_directory" "$summary_directory" 2> /dev/null # remove directories #
 }
-
 parsing(){
 	if [ "$#" != 0 ]; then
 		# download html file #
 		wget -k "$positional_parameter" -o "$tmp_directory"/.wget -O "$ct"	##
+		if [ ! $omdb ]; then omdb=$(grep -E $format "$ct"|head -1|sed -e "s/.*\">//" -e "s/[S-s][0-9][0-9].*//"); fi
 		# removes needed text, excluding junk #
-		grep -iowE "<a href=.*$format" "$ct" | grep -vE '.*(amp|darr).*' > "$ct2" && mv "$ct2" "$ct" || stat=$?	##
+		grep -iowE "<a href=$format" "$ct" | grep -vE '.*(amp|darr).*' > "$ct2" && mv "$ct2" "$ct" || stat=$?	##
 		if [ $stat ]; then echo -e ":: error: $positional_parameter\\n"; cleanup && exit; fi
 		# get trailers if available #
 		# get trailer code goes here #
@@ -54,7 +57,7 @@ parsing(){
 		else f=(480p 720p 1080p 2160p)
 		fi
 		for f in "${f[@]}"; do
-			grep -vE "$f.*(x264|x265)" "$ct" | grep "$f" > "$PIO_directory"/main && echo "s$tag $f" >> "$tmp_directory"/txt || if [ "$first_pixel" ]||[ "$second_pixel" ]||[ "$third_pixel" ]||[ "$fourth_pixel" ]; then echo -e "\\n:: error: $f not found.\\n"; cleanup && exit; else rm "$PIO_directory"/main; fi
+			grep -vE "$f.*(x264|x265)" "$ct" > "$tmp_directory"/ct3 && grep "$f" "$tmp_directory"/ct3 > "$PIO_directory"/main && echo "s$tag $f main" >> "$tmp_directory"/txt && rm "$tmp_directory"/ct3 || if [ "$first_pixel" ]||[ "$second_pixel" ]||[ "$third_pixel" ]||[ "$fourth_pixel" ]; then echo -e "\\n:: error: $f not found.\\n"; cleanup && exit; else rm "$tmp_directory"/ct3; fi
 			if [ ! "$x5" ]; then
 				grep "$f" "$ct" | grep "x264" > "$PIO_directory"/x264 && echo "S$tag $f x264" >> "$tmp_directory"/txt || if [ "$x4" ]; then echo -e "\\n:: error: x264 not found.\\n"; cleanup; exit; else rm "$PIO_directory"/x264; fi
 			fi
@@ -69,21 +72,29 @@ parsing(){
 		rm "$ct"
 	else
 		touch $out
-		# adds header alignment #
+		# adds alignment & movie description #
 		if [ ! "$no_alignment" ]; then
-			echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]\\n\\n>>>  paste movie description here  <<<" >> $out
+			echo -e "[vc_row][vc_column column_width_percent=\"100\" align_horizontal=\"align_center\" overlay_alpha=\"50\" gutter_size=\"3\" medium_width=\"0\" mobile_width=\"0\" shift_x=\"0\" shift_y=\"0\" shift_y_down=\"0\" z_index=\"0\" width=\"1/1\"][vc_column_text]" >> $out
+			curl -s -H "Accept: application/json" -H "Content-Type: application/json" "http://www.omdbapi.com/?t=$omdb&apikey=7759dbc7" -o "$tmp_directory"/description
+			if grep -q "Movie not found!" "$tmp_directory"/description; then
+				echo -e "\\n>>>  paste movie description here  <<<" >> $out
+			else
+				desc=$(sed -e "s/.*Plot\":\"//" -e "s/\",\"Lan.*//" "$tmp_directory"/description)
+				echo -e "\\n$desc" >> $out
+			fi
 		fi	##
 		# finalize parsing by sorting resolutions, add titles  & copy to clipboard
 		for file in "$summary_directory"/*; do
 			title=$(grep -ioE "(s[0-9][0-9]|s[0-9])" "$file"|head -1|sed -e "s/[S-s]/<h3>Season /" -e 's/$/<\/h3>/')
 			tag=$(echo "$title"|grep -o "[0-9][0-9]")
 			if [ ! "$no_title" ]; then grep -q "$title" $out || echo -e "\\n$title" >> $out; fi
+			f=(480p 720p 1080p 2160p)
 			for f in "${f[@]}"; do
 				if [ ! "$x4" ]||[ ! "$x5" ]; then
-					grep -qwo "s$tag $f" "$tmp_directory"/txt && echo -e "\\n$f\\n" >> "$out" && grep "$f" "$file" | grep -vE "(x264|x265)" >> $out
+					grep -qwoi "s$tag $f main" "$tmp_directory"/txt && echo -e "\\n$f\\n" >> "$out" && grep "$f" "$file" | grep -vE "(x264|x265)" >> $out
 				fi
-				grep -qwo "s$tag $f x264" "$tmp_directory"/txt && echo -e "\\n$f x264\\n" >> "$out" && grep "$f.*x264" "$file" >> $out
-				grep -qwo "s$tag $f x265" "$tmp_directory"/txt && echo -e "\\n$f x265\\n" >> "$out" && grep -E "$f.*x265" "$file" >> $out
+				grep -qwoi "s$tag $f x264" "$tmp_directory"/txt && echo -e "\\n$f x264\\n" >> "$out" && grep "$f.*x264" "$file" >> $out
+				grep -qwoi "s$tag $f x265" "$tmp_directory"/txt && echo -e "\\n$f x265\\n" >> "$out" && grep -E "$f.*x265" "$file" >> $out
 			done
 		done
 		if [ ! "$no_alignment" ]; then echo -e "\\n[/vc_column_text][/vc_column][/vc_row]" >> $out; fi
