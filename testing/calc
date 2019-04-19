@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+#case $1 in
+#	*)	n1=$1; z=0
+#		while true; do
+#			div=$(echo "100 / $n1"|bc -lq);mod=$(echo "100 % $div"|bc -lq);z=$((z+1))
+#			if [ $mod == 0 ]; then mul=$(echo "$div * $z"|bc -lq); fi
+#			echo "$mul"
+#			if [ $z == $n1 ]; then mul=$(echo "$mul + $mod"|bc -lq); echo "$mul" && break;fi
+#			if [ $mod != 0 ]; then mul=$(echo "$div * $z"|bc -lq); fi
+#		done;;
+#esac
+
+round(){
+	echo $(printf %.$2f $(echo "scale=$2
+	(((10^$2) * $1) + 0.5)/(10^$2)"|bc))
+}
+
+read float
+echo $(round $float/1.18 2)
