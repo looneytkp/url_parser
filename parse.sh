@@ -13,7 +13,7 @@ else
 		bin=$(md5sum /usr/bin/parse | sed 's: .*::')
 		script=$(md5sum "$0" | sed 's: .*::')
 		if [ "$bin" != "$script" ]; then
-			sudo cp -u "$0" /usr/bin/parse	# update parse whe already installed #
+			sudo -p ":: input password to update parse: " cp -u "$0" /usr/bin/parse	# update parse whe already installed #
 			echo -e ":: parse is updated."
 			exit
 		fi
@@ -35,10 +35,22 @@ cleanup(){
 	if [ -e "$tmp_directory"/err ]; then echo -e "\\nlogs:"; cat -n "$tmp_directory"/err && echo; fi # print logs if found #
 	rm -rf "$tmp_directory" "$PIO_directory" "$summary_directory" 2> /dev/null # remove directories #
 }
+connect(){
+	#wget -q --spider google.com && exitStatus=$?||exitStatus=4
+	#if [ $exitStatus == 0 ]; then
+	if grep -q "404" "$tmp_directory"/.wget; then
+		echo -e "\\n:: error $counter: $positional_parameter\\n:: 404 not found.\\n"
+	elif grep -q "Name or service not known" "tmp_directory"/.wget; then
+		echo -e "\\n:: error $counter: $positional_parameter\\n:: service unknown: '$url'\\n"
+	else
+		echo -e "\\n:: no internet connection.\\n"
+	fi
+	cleanup && exit
+}
 parsing(){
 	if [ "$#" != 0 ]; then
 		# download html file #
-		wget -k "$positional_parameter" -o "$tmp_directory"/.wget -O "$ct"	##
+		wget -k "$positional_parameter" -o "$tmp_directory"/.wget -O "$ct" || connect	##
 		if [ ! $omdb ]; then omdb=$(grep -E $format "$ct"|head -1|sed -e "s/.*\">//" -e "s/[S-s][0-9][0-9].*//"); fi
 		# removes needed text, excluding junk #
 		grep -iowE "<a href=$format" "$ct" | grep -vE '.*(amp|darr).*' > "$ct2" && mv "$ct2" "$ct" || stat=$?	##
@@ -131,7 +143,7 @@ for positional_parameter; do
 		# checks for redundant arguments that aren't urls #
 		check_url=$(echo "$positional_parameter"|grep "http"||echo error)
 		if [ "$check_url" == error ]; then
-			echo -e "\\n:: error: $positional_parameter\\n"; cleanup && exit
+			echo -e "\\n:: error $counter: $positional_parameter\\n"; cleanup && exit
 		fi	##
 		parsing "$positional_parameter"
 		# simple algo to calculate progress in percentage #
