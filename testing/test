@@ -111,12 +111,14 @@ set -x
 		else f=(480p 720p 1080p 2160p)
 		fi
 		for f in "${f[@]}"; do
-			grep -vE "$f.*(x264|x265)" "$ct" > "$tmp_directory"/ct3 && grep "$f" "$tmp_directory"/ct3 > "$PIO_directory"/main && echo "s$tag $f main" >> "$tmp_directory"/txt && rm "$tmp_directory"/ct3 || if [ "$first_pixel" ]||[ "$second_pixel" ]||[ "$third_pixel" ]||[ "$fourth_pixel" ]; then echo -e "\\n:: error: $f not found.\\n"; cleanup && exit; else rm "$tmp_directory"/ct3; fi
+			grep -vE "$f.*(x264|x265)" "$ct" > "$tmp_directory"/ct3 && grep "$f" "$tmp_directory"/ct3 > "$PIO_directory"/main && echo "s$tag $f main" >> "$tmp_directory"/txt && rm "$tmp_directory"/ct3|| rm "$tmp_directory"/ct3
+			# for x264 argument #
 			if [ ! "$x5" ]; then
-				grep "$f" "$ct" | grep "x264" > "$PIO_directory"/x264 && echo "S$tag $f x264" >> "$tmp_directory"/txt || if [ "$x4" ]; then echo -e "\\n:: error: x264 not found.\\n"; cleanup; exit; else rm "$PIO_directory"/x264; fi
-			fi
+				grep "$f" "$ct" | grep "x264" > "$PIO_directory"/x264 && echo "S$tag $f x264" >> "$tmp_directory"/txt || if [ "$x4" ]; then echo -e "\\n:: error $positional_parameter\\n:: x264 not found.\\n"; cleanup; exit; else rm "$PIO_directory"/x264; fi
+			fi	##
+			# for x265 argument #
 			if [ ! "$x4" ]; then
-				grep "$f" "$ct" | grep "x265" > "$PIO_directory"/x265 && echo "s$tag $f x265" >> "$tmp_directory"/txt || if [ "$x5" ]; then echo -e "\\n:: error: x265 not found.\\n"; cleanup; exit; else rm "$PIO_directory"/x265; fi
+				grep "$f" "$ct" | grep "x265" > "$PIO_directory"/x265 && echo "s$tag $f x265" >> "$tmp_directory"/txt || if [ "$x5" ]; then echo -e "\\n:: error $positional_parameter\\n:: x265 not found.\\n"; cleanup; exit; else rm "$PIO_directory"/x265; fi
 			fi	##
 
 			# sort texts in numerical order #
@@ -125,8 +127,31 @@ set -x
 			done	##
 
 		done
+
 		rm "$ct"
 	else
+
+		# for 480p, 720p, 1080p & 2160p arguments #
+		if [ "$first_pixel" ]||[ "$second_pixel" ]||[ "$third_pixel" ]||[ "$fourth_pixel" ]; then
+			if [ "$first_pixel" ]; then
+				if ! grep -qi "$first_pixel" "$summary_directory"/*; then
+					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+				fi
+			elif [ "$second_pixel" ]; then
+				if ! grep -qi "$second_pixel" "$summary_directory"/*; then
+					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+				fi
+			elif [ "$third_pixel" ]; then
+				if ! grep -qi "$third_pixel" "$summary_directory"/*; then
+					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+				fi
+			elif [ "$fourth_pixel" ]; then
+				if ! grep -qi "$fourth_pixel" "$summary_directory"/*; then
+					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+				fi
+			fi
+		fi	##
+
 		touch $out
 
 		# adds alignment & movie description #
