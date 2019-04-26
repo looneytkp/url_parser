@@ -135,19 +135,19 @@ set -x
 		if [ "$first_pixel" ]||[ "$second_pixel" ]||[ "$third_pixel" ]||[ "$fourth_pixel" ]; then
 			if [ "$first_pixel" ]; then
 				if ! grep -qi "$first_pixel" "$summary_directory"/*; then
-					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+					echo -e ":: error: $f not found.\\n"; cleanup && exit
 				fi
 			elif [ "$second_pixel" ]; then
 				if ! grep -qi "$second_pixel" "$summary_directory"/*; then
-					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+					echo -e ":: error: $f not found.\\n"; cleanup && exit
 				fi
 			elif [ "$third_pixel" ]; then
 				if ! grep -qi "$third_pixel" "$summary_directory"/*; then
-					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+					echo -e ":: error: $f not found.\\n"; cleanup && exit
 				fi
 			elif [ "$fourth_pixel" ]; then
 				if ! grep -qi "$fourth_pixel" "$summary_directory"/*; then
-					echo -e "\\n:: error: $f not found.\\n"; cleanup && exit
+					echo -e ":: error: $f not found.\\n"; cleanup && exit
 				fi
 			fi
 		fi	##
