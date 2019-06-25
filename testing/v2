@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -e
+
+cleanup(){	# clean up residues before and after execution #
+	#if [ -e "$tmp_directory"/err ]; then echo -e "\\nlogs:"; cat -n "$tmp_directory"/err && echo; fi # print logs if found #
+	rm -rf "$tmp_directory" "$PIO_directory" "$summary_directory" "$out" $out2 $txt $json 2> /dev/null # remove directories #
+}
+
+sig_abort(){
+	cleanup && echo -e "\\n:: aborted.\\n" && exit 0
+}
+start=`date +%s`
+trap sig_abort SIGINT
+params=$#
+if [ $params == 0 ]; then echo ":: no url to parse." && exit; fi
+
+# variables #
+format='.*(avi|flv|wmv|mov|mp4|mkv).*</a>'	# mvoie extensions #
+tmp_directory="$PWD/.temp"; PIO_directory="$PWD/.PIO"; summary_directory="$PWD/.finished"	# directories #
+ct="$tmp_directory/xy"; ct2="$tmp_directory/yx"; out="$tmp_directory/.data"; out2="$tmp_directory/.parsed"; txt="$tmp_directory/parse_data.txt"; json="$tmp_directory/parse_data.json"; arguments="$tmp_directory/args"	# config files #
+export format tmp_directory PIO_directory summary_directory ct ct2 out out2 txt json arguments	##
+cleanup
+mkdir -p "$tmp_directory" "$PIO_directory" "$summary_directory"
+
+args=(-r -a -t -480p -720p -1080p -2160p -x4 -x5)
+for argument in "${args[@]}"; do
+	pattern=$(echo "$@"|grep -o -- "$argument"||echo)
+	if [ "$pattern" == $argument ]; then
+			echo "-$argument" >> $arguments; params=$((params-1))
+	fi
+done
+
+echo; percentage=0; counter=1
+for positional_parameter; do
+	# ignores parse arguments if parsed #
+	if grep -q -- "$positional_parameter" $arguments; then
+		continue
+	else
+		printf %b ":: parsing $params URL(s): $percentage%\\r"
+		# checks for redundant arguments #
+		grep -qE "(http|https)" <<< "$positional_parameter" || if [ $? != 0 ]; then echo -e "\\n:: error $counter: $positional_parameter\\n:: invalid URL.\\n"; cleanup && exit; fi ##
+		export positional_parameter
+		./parser.sh "$positional_parameter"
+		unset positional_parameter
+		# simple algo to calculate progress in percentage #
+		divide=$(printf %.0f "$(echo "100/$params" | bc -l)")
+		percentage=$(printf %.0f "$(echo "$divide*$counter" | bc -l)")
+		if [ $counter == $params ]; then
+			subtract=$(printf %.0f "$(echo "100-$percentage" | bc -l)")
+			percentage=$(printf %.0f "$(echo "$percentage+$subtract" | bc -l)")
+			echo ":: parsing $params URL(s): $percentage%"
+			break
+		fi
+		counter=$((counter+1))	##
+	fi
+done
+./parser.sh && cleanup
+end=`date +%s`
+runtime=$( echo "$end - $start" | bc -l )
+echo -e ":: runtime: $runtime\s\\n"
+exit 0
